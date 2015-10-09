@@ -5,7 +5,6 @@ import Color from "./Color.js"
 
 class Game {
 	constructor (cx, settings, options) {
-		this.self = this;
 		this.CX = cx;
 		this.settings = settings;
 		this.options = options;
@@ -46,10 +45,10 @@ class Game {
 
 	render() {
 		//todo: paint beacons
-		self.board.paint();
-		self.salt.paint();
-		self.pepper.paint();
-		requestAnimationFrame(self.render); //BUG: somehow 'this' changes from game to window
+		this.board.paint();
+		this.salt.paint();
+		this.pepper.paint();
+		requestAnimationFrame(this.render); //BUG: somehow 'this' changes from game to window
 	}
 
 	nextFrame() {
