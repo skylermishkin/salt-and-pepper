@@ -4,29 +4,35 @@ import Position from "./Position.js"
 import Color from "./Color.js"
 
 class Game {
-	constructor (settings, options) {
+	constructor (cx, settings, options) {
+		this.self = this;
+		this.CX = cx;
 		this.settings = settings;
 		this.options = options;
 		this.keys = {};
 		this.completed = false;
-		this.board = new Board(settings['rows'], settings['cols'], settings['colorMatrix'], settings['initVisibility']);
+		this.board = new Board(cx, settings['width'], settings['height'], settings['rows'], settings['cols'], settings['saltMatrix'], settings['visibilityMatrix']);
 		this.salt = new Player(null, settings['saltColor']);
 		this.pepper = new Player(null, settings['pepperColor']);
 	}
 
 	play() {
 		this.animation = window.requestAnimationFrame(this.render);
+		/*
 	    this.frames = window.setInterval(function() {nextFrame();}, 17);
 	    this.phases = window.setInterval(function() {nextPhase();}, this.settings['interval']);
+		*/
 	}
 
 	pause() {
 		window.cancelAnimationFrame(this.animation);
 		this.animation = undefined;
+		/*
 		window.clearInterval(this.frames);
 		this.frames = undefined;
-		window.clearInterval(this.phases);
+		window.clearInterval(this.phases);  //this will cause a bug where pause->play resets the phase (doesn't track how much of the phase elapsed when paused)
 		this.phases = undefined;
+		*/
 	}
 
 	setListeners() {
@@ -39,9 +45,11 @@ class Game {
 	}
 
 	render() {
-		//todo: render board, render beacons, render player
-
-		requestAnimationFrame(this.render);
+		//todo: paint beacons
+		self.board.paint();
+		self.salt.paint();
+		self.pepper.paint();
+		requestAnimationFrame(self.render); //BUG: somehow 'this' changes from game to window
 	}
 
 	nextFrame() {

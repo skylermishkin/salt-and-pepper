@@ -1,14 +1,18 @@
 class Cell {
-	constructor (color, visibility) {
-		this.color = color;
-		//0 <= visibility <= 1;
-		this.visibility = visibility;
+	constructor (salt, visibility) {
+		//0 <= salt <= 8
+		this._salt = salt;
+		//0 <= visibility <= 1
+		this._visibility = visibility;
 	}
-	
-	get color () {return this.color;}
-	set color (newColor) {this.color = newColor;}
-	get visibility () {return this.visibility;}
-	set visibility (newVisibility) {this.visibility = newVisibility;}
+
+	get salt() {return this._salt;}
+	set salt(s) {this._salt = s;}
+	get visibility() {return this._visibility;}
+	set visibility(v) {this._visibility = v;}
+
+	lower_salt(amount) {this.salt -= amount;}
+	increase_salt(amount) {this.salt += amount;}
 };
 
 export default Cell;

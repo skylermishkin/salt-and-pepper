@@ -1,23 +1,23 @@
 class Color {
 	constructor (red, green, blue) {
-		this.red = red;
-		this.green = green;
-		this.blue = blue;
+		this._red = red || 0; // defaults to black
+		this._green = green != undefined ? green : this._red;
+		this._blue = blue != undefined ? blue : this._red;
 	}
 	
-	get red () {return this.red;}
-	set red (value) {this.red = value;}
-	get green () {return this.green;}
-	set green (value) {this.green = value;}
-	get blue () {return this.blue;}
-	set blue (value) {this.blue = value;}
-	get values () {return [this.red, this.green, this.blue];}
-	set values ([r,g,b]) {	this.red = r;
-							this.green = g;
-							this.blue = b;
+	get red() {return this._red;}
+	set red(value) {this._red = value;}
+	get green() {return this._green;}
+	set green(value) {this._green = value;}
+	get blue() {return this._blue;}
+	set blue(value) {this._blue = value;}
+	get values() {return [this._red, this._green, this._blue];}
+	set values(vals) {	this._red = vals[0];
+							this._green = vals[1];
+							this._blue = vals[2];
 						}
 
-	brighten (amount) {  //adds amount to each color value
+	brighten(amount) {  //adds amount to each color value
 		var newValues = [];
 		for (var i = 0; i < 3; i++) {
 			newValues[i] = this.values[i] + amount;
@@ -25,19 +25,19 @@ class Color {
 		this.values(newValues);
 	}
 
-	addRed (amount) {
-		this.red += amount;
+	addRed(amount) {
+		this._red += amount;
 	}
 
-	addGreen (amount) {
-		this.green += amount;
+	addGreen(amount) {
+		this._green += amount;
 	}
 
-	addBlue (amount) {
-		this.blue += amount;
+	addBlue(amount) {
+		this._blue += amount;
 	}
 
-	standardize () {  //ensures colors are in range 0->255
+	standardize() {  //ensures colors are in range 0->255
 		var newValues = [];
 		for (var i = 0; i < 3; i++) {
 			if (this.values[i] > 255) {
@@ -49,8 +49,13 @@ class Color {
 		this.values(newValues);
 	}
 
-	asString () {
-		return 'rgb(' + this.red + ',' + this.green + ',' + this.blue + ')';
+	css() {
+        return "rgb(" + 
+        	Math.round(this._red) + 
+        	"," + 
+        	Math.round(this._green) + 
+        	"," + 
+        	Math.round(this._blue) + ")";
 	}
 };
 

@@ -1,5 +1,5 @@
 import Game from "./Game.js"
-import Position from "./Position.js"
+import Color from "./Color.js"
 
 //global declarations
 var SETTINGS = {
@@ -21,29 +21,59 @@ var OPTIONS = {
 	'paused' : true,
     'volume' : 5
 };
+var CX;
 var GAME;
 
 window.requestAnimationFrame = window.requestAnimationFrame || window.webkitRequestAnimationFrame;
 
 onload = function() {
-    //grab dimensions
-    var WIDTH = document.body.clientWidth;
-    var HEIGHT = document.body.clientHeight;
+    //grab window dimensions
+    SETTINGS['width'] = document.body.clientWidth;
+    SETTINGS['height'] = document.body.clientHeight;
 
-    //size canvas
-    document.querySelector("canvas").width = WIDTH * 4 / 5;
-    document.querySelector("canvas").height = HEIGHT;
-    var CX = document.querySelector("canvas").getContext("2d");
+    initializeCanvas();
     
     initializeMenu();
 };
 
 //----------------------------------------------------------------------------
 
+function initializeCanvas() {
+    //size canvas
+    if (SETTINGS['width'] * 4 / 5 > SETTINGS['height']) {
+        document.querySelector("canvas").width = SETTINGS['height'];
+        document.querySelector("canvas").height = SETTINGS['height'];
+    } else {
+        document.querySelector("canvas").width = SETTINGS['width'] * 4 / 5;
+        document.querySelector("canvas").height = SETTINGS['width'] * 4 / 5;
+    }
+
+    CX = document.querySelector("canvas").getContext("2d");
+}
+
+//----------------------------------------------------------------------------
+
 function initializeMenu() {
-    //size menu
-    document.getElementById('menu').style.width = SETTINGS['width'] / 5;
-    
+    let menuHTML = `<h2>Game Menu</h2>
+        <br>
+        <h3 id="threshold">To win: 0</h3>
+        <h3 id="score">Score: 0</h3>
+        <br>
+        <p>Choose a level</p>
+        <select id="levelSelect">
+            <option value=1>Lvl 1</option>
+            <option value=2>Lvl 2</option>
+            <option value=3>Lvl 3</option>
+            <option value=4>Lvl 4</option>
+            <option value=5>Lvl 5</option>
+        </select>
+        <button id='loadButton'>Load</button>`;
+
+    let menu = document.createElement("div");
+    menu.setAttribute("id", "menu");
+    menu.innerHTML = menuHTML;
+    menu.style.width = SETTINGS['width'] / 5;
+    document.body.insertBefore(menu, document.body.childNodes[0]);    
     setMenuListeners();
 }
 
@@ -58,25 +88,60 @@ function setMenuListeners() {
 
 //----------------------------------------------------------------------------
 
-function loadGame(levelSelect) {
+function loadGame(level) {
     //confirm load
     if (confirm("Loading a level will cause unsaved progress to be lost.\nContinue with load?")) {
-        initializeGame(levelSettings(levelSelect), OPTIONS);
+        GAME = undefined;
+        levelSettings(level);
+        initializeGame(CX, SETTINGS, OPTIONS);
     }
 }
 
 //----------------------------------------------------------------------------
 
-function initializeGame(setings, options) {
-	GAME = new Game(settings, options);
+function initializeGame(cx, settings, options) {
+	GAME = new Game(cx, settings, options);
 	GAME.setListeners();
-	GAME.render();
+	GAME.play();
 }
 
 //----------------------------------------------------------------------------
 
-function levelSettings(levelSelect) {
-    //todo: transform the levelSelect into level specific settings such as salt matrix
+function levelSettings(level) { 
+    //simple random x,y generator according to level
+    var randX = [];
+    var randY = [];
+    for (let i = 0; i < level; i++) {
+        randX.push(getRandomIntInclusive(0,10));
+        randY.push(getRandomIntInclusive(0,10));
+    }
+
+    //initialize saltMatrix and visibilityMatrix with 0's
+    var saltMatrix = [];
+    var visibilityMatrix = [];
+    for (let i = 0; i < SETTINGS['rows']; i++) {
+        var row = []
+        for (let j = 0; j < SETTINGS['cols']; j++) {
+            row.push(0);
+        }
+        saltMatrix.push(row);
+        visibilityMatrix.push(row);
+    }
+    //sprinkle salt
+    for (let i = 0; i < level; i++) {
+        saltMatrix[randX[i]][randY[i]] = 8;
+    }
+
+    SETTINGS['saltMatrix'] = saltMatrix;
+    SETTINGS['visibilityMatrix'] = visibilityMatrix;
+}
+
+//----------------------------------------------------------------------------
+
+// Returns a random integer between min (included) and max (included)
+// Using Math.round() will give you a non-uniform distribution!
+function getRandomIntInclusive(min, max) {
+    return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
 //----------------------------------------------------------------------------
