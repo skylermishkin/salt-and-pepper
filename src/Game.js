@@ -61,8 +61,8 @@ class Game {
 	play() {
 		this.animation = window.requestAnimationFrame(this.render.bind(this));
 		/*
-	    this.frames = window.setInterval(function() {this.nextFrame();}, 17);
-	    this.phases = window.setInterval(function() {this.nextPhase();}, this.settings['interval']);
+	    this.frames = window.setInterval(function() {this.nextFrame().bind(this);}, 17);
+	    this.phases = window.setInterval(function() {this.nextPhase().bind(this);}, this.settings['interval']);
 		*/
 	}
 

@@ -14,12 +14,12 @@ var SETTINGS = {
 
     //player related
 	'gravity' : 1,
-    'playerRadius': 20,
+    'playerRadius': 20,  // in pixels
     'saltColor': new Color(255),
     'pepperColor': new Color(0),
 
     //beacon related
-    'beaconRadius': 3
+    'beaconRadius': 100  // in pixels
 };
 var OPTIONS = {
 	'paused' : true,
@@ -35,21 +35,21 @@ onload = function() {
     SETTINGS['width'] = document.body.clientWidth;
     SETTINGS['height'] = document.body.clientHeight;
 
-    initializeCanvas();
-    
     initializeMenu();
+    initializeCanvas();
 };
 
 //----------------------------------------------------------------------------
 
 function initializeCanvas() {
+    let menu = document.getElementById('menu');
     //size canvas
-    if (SETTINGS['width'] * 4 / 5 > SETTINGS['height']) {
-        SETTINGS['boardWidth'] = SETTINGS['height'];
-        SETTINGS['boardHeight'] = SETTINGS['height'];
+    if (SETTINGS['width'] > SETTINGS['height'] - menu.offsetHeight) {
+        SETTINGS['boardWidth'] = SETTINGS['height'] - menu.offsetHeight;
+        SETTINGS['boardHeight'] = SETTINGS['height'] - menu.offsetHeight;
     } else {
-        SETTINGS['boardWidth'] = SETTINGS['width'] * 4 / 5;
-        SETTINGS['boardHeight'] = SETTINGS['width'] * 4 / 5;
+        SETTINGS['boardWidth'] = SETTINGS['width'];
+        SETTINGS['boardHeight'] = SETTINGS['width'];
     }
     document.querySelector("canvas").width = SETTINGS['boardWidth'];
     document.querySelector("canvas").height = SETTINGS['boardHeight'];
@@ -61,20 +61,33 @@ function initializeCanvas() {
 
 function initializeMenu() {
     let menuHTML = `<h2>Game Menu</h2>
-        <br>
-        <h3 id="threshold">To win: 0</h3>
-        <h3 id="score">Score: 0</h3>
-        <h3 id="moves">Moves: 0</h3>
-        <br>
-        <p>Choose a level</p>
-        <select id="levelSelect">
-            <option value=1>Lvl 1</option>
-            <option value=2>Lvl 2</option>
-            <option value=3>Lvl 3</option>
-            <option value=4>Lvl 4</option>
-            <option value=5>Lvl 5</option>
-        </select>
-        <button id='loadButton'>Load</button>`;
+        <table>
+            <tr>
+                <td>To win</td>
+                <td></td>
+            </tr>
+            <tr>
+                <td></td>
+                <td></td>
+            </tr>
+            <tr>
+                <td></td>
+                <td></td>
+            </tr>
+
+            <h3 id="threshold">To win: 0</h3>
+            <h3 id="score">Score: 0</h3>
+            <h3 id="moves">Moves: 0</h3>
+            <p>Choose a level</p>
+            <select id="levelSelect">
+                <option value=1>Lvl 1</option>
+                <option value=2>Lvl 2</option>
+                <option value=3>Lvl 3</option>
+                <option value=4>Lvl 4</option>
+                <option value=5>Lvl 5</option>
+            </select>
+            <button id='loadButton'>Load</button>
+        </table>`;
 
     let menu = document.createElement("div");
     menu.setAttribute("id", "menu");
