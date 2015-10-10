@@ -16,7 +16,7 @@ class Game {
 	}
 
 	play() {
-		this.animation = window.requestAnimationFrame(this.render);
+		this.animation = window.requestAnimationFrame(this.render.bind(this));
 		/*
 	    this.frames = window.setInterval(function() {nextFrame();}, 17);
 	    this.phases = window.setInterval(function() {nextPhase();}, this.settings['interval']);
@@ -48,7 +48,7 @@ class Game {
 		this.board.paint();
 		this.salt.paint();
 		this.pepper.paint();
-		requestAnimationFrame(this.render); //BUG: somehow 'this' changes from game to window
+		requestAnimationFrame(this.render.bind(this)); //BUG: somehow 'this' changes from game to window
 	}
 
 	nextFrame() {

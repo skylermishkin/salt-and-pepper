@@ -110,6 +110,7 @@ function initializeGame(cx, settings, options) {
 //----------------------------------------------------------------------------
 
 function levelSettings(level) { 
+    console.log(level); //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     //simple random x,y generator according to level
     var randX = [];
     var randY = [];
@@ -117,6 +118,7 @@ function levelSettings(level) {
         randX.push(getRandomIntInclusive(0,10));
         randY.push(getRandomIntInclusive(0,10));
     }
+    console.log(randY, randX); //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
     //initialize saltMatrix and visibilityMatrix with 0's
     var saltMatrix = [];
