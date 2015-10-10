@@ -57,8 +57,8 @@ class Board {
 	paint() {
 		this.CX.save();
 
-	    let cellWidth = document.querySelector('canvas').width / this.cols;
-	    let cellHeight = document.querySelector('canvas').height / this.rows;
+	    let cellWidth = this.width / this.cols;
+	    let cellHeight = this.height / this.rows;
 
 	    for (let x = 0; x < this.cols; x++) {
 	        for (let y = 0; y < this.rows; y++) {

@@ -10,7 +10,7 @@ class Game {
 		this.options = options;
 		this.keys = {};
 		this.completed = false;
-		this.board = new Board(cx, settings['width'], settings['height'], settings['rows'], settings['cols'], settings['saltMatrix'], settings['visibilityMatrix']);
+		this.board = new Board(cx, settings['boardWidth'], settings['boardHeight'], settings['rows'], settings['cols'], settings['saltMatrix'], settings['visibilityMatrix']);
 		this.salt = new Player(null, settings['saltColor']);
 		this.pepper = new Player(null, settings['pepperColor']);
 	}

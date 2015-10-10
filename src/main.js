@@ -41,12 +41,14 @@ onload = function() {
 function initializeCanvas() {
     //size canvas
     if (SETTINGS['width'] * 4 / 5 > SETTINGS['height']) {
-        document.querySelector("canvas").width = SETTINGS['height'];
-        document.querySelector("canvas").height = SETTINGS['height'];
+        SETTINGS['boardWidth'] = SETTINGS['height'];
+        SETTINGS['boardHeight'] = SETTINGS['height'];
     } else {
-        document.querySelector("canvas").width = SETTINGS['width'] * 4 / 5;
-        document.querySelector("canvas").height = SETTINGS['width'] * 4 / 5;
+        SETTINGS['boardWidth'] = SETTINGS['width'] * 4 / 5;
+        SETTINGS['boardHeight'] = SETTINGS['width'] * 4 / 5;
     }
+    document.querySelector("canvas").width = SETTINGS['boardWidth'];
+    document.querySelector("canvas").height = SETTINGS['boardHeight'];
 
     CX = document.querySelector("canvas").getContext("2d");
 }
