@@ -3,7 +3,7 @@ import Color from "./Color.js"
 
 class Board {
 	constructor(cx, width, height, rows, cols, saltMatrix, visibilityMatrix) {
-		this.CX = cx;
+		this.cx = cx;
 		this.width = width;
 		this.height = height;
 
@@ -55,7 +55,7 @@ class Board {
 	}
 
 	paint() {
-		this.CX.save();
+		this.cx.save();
 
 	    let cellWidth = this.width / this.cols;
 	    let cellHeight = this.height / this.rows;
@@ -65,16 +65,17 @@ class Board {
 	    		let cVal = this.get_cell(x, y).salt * 32;
 	    		let cellColor = new Color(cVal, cVal, cVal);
 
-	            this.CX.lineWidth = "1";
-	            this.CX.strokeStyle = cellColor.css();
-	            this.CX.fillStyle = cellColor.css();
-	            this.CX.beginPath();
-	            this.CX.rect(cellWidth * x, cellHeight * y, cellWidth, cellHeight);
-	            this.CX.fill();
-	            this.CX.stroke();
+	            this.cx.lineWidth = "1";
+	            this.cx.strokeStyle = cellColor.css();
+	            this.cx.fillStyle = cellColor.css();
+	            this.cx.beginPath();
+	            this.cx.rect(cellWidth * x, cellHeight * y, cellWidth, cellHeight);
+	            this.cx.fill();
+	            this.cx.stroke();
 	        }
 	    }
-	    this.CX.restore();
+	    
+	    this.cx.restore();
 	}
 };
 

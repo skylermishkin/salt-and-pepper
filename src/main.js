@@ -1,5 +1,6 @@
 import Game from "./Game.js"
 import Color from "./Color.js"
+import Position from "./Position.js"
 
 //global declarations
 var SETTINGS = {
@@ -13,9 +14,12 @@ var SETTINGS = {
 
     //player related
 	'gravity' : 1,
+    'playerRadius': 20,
+    'saltColor': new Color(255),
+    'pepperColor': new Color(0),
 
     //beacon related
-    'radius': 3
+    'beaconRadius': 3
 };
 var OPTIONS = {
 	'paused' : true,
@@ -60,6 +64,7 @@ function initializeMenu() {
         <br>
         <h3 id="threshold">To win: 0</h3>
         <h3 id="score">Score: 0</h3>
+        <h3 id="moves">Moves: 0</h3>
         <br>
         <p>Choose a level</p>
         <select id="levelSelect">
@@ -101,24 +106,16 @@ function loadGame(level) {
 
 //----------------------------------------------------------------------------
 
-function initializeGame(cx, settings, options) {
-	GAME = new Game(cx, settings, options);
-	GAME.setListeners();
-	GAME.play();
-}
-
-//----------------------------------------------------------------------------
-
-function levelSettings(level) { 
-    console.log(level); //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    //simple random x,y generator according to level
+function levelSettings(level) {
+    SETTINGS['threshold'] = level;
+    
+    //simple random x,y generator according to level (can make two salts on the same spot)
     var randX = [];
     var randY = [];
     for (let i = 0; i < level; i++) {
-        randX.push(getRandomIntInclusive(0,10));
-        randY.push(getRandomIntInclusive(0,10));
+        randX.push(getRandomIntInclusive(0,SETTINGS['cols']-1));
+        randY.push(getRandomIntInclusive(0,SETTINGS['rows']-1));
     }
-    console.log(randY, randX); //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
     //initialize saltMatrix and visibilityMatrix with 0's
     var saltMatrix = [];
@@ -146,6 +143,14 @@ function levelSettings(level) {
 // Using Math.round() will give you a non-uniform distribution!
 function getRandomIntInclusive(min, max) {
     return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
+//----------------------------------------------------------------------------
+
+function initializeGame(cx, settings, options) {
+	GAME = new Game(cx, settings, options);
+
+	GAME.board.paint();
 }
 
 //----------------------------------------------------------------------------

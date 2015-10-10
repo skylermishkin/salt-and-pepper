@@ -1,7 +1,11 @@
 class Player {
-	constructor(position, color) {
+	constructor(cx, position, color, radius) {
+		this.cx = cx;
+
 		this._position = position;
 		this._color = color;
+		this._radius =radius;
+
         this._moveable = true;
 	}
 
@@ -13,7 +17,19 @@ class Player {
 	set movability(m) {this._moveable = m;}
 
 	paint() {
-		//todo
+		this.cx.save();
+
+		this.cx.lineWidth = "1";
+        this.cx.strokeStyle = this.color.css();
+        this.cx.fillStyle = this.color.css();
+        this.cx.beginPath();
+        this.cx.arc(this.position.x, this.position.y,
+        	this._radius,
+        	0, 2*Math.PI);
+        this.cx.fill();
+        this.cx.stroke();
+
+	    this.cx.restore();
 	}
 };
 
