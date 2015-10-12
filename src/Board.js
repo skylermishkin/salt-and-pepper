@@ -21,8 +21,8 @@ class Board {
 		}
 	}
 	
-	get_cell(row, col) {return this.matrix[row][col];}
-	set_cell(row, col, newCell) {this.matrix[row][col] = newCell;}
+	getCell(row, col) {return this.matrix[row][col];}
+	setCell(row, col, newCell) {this.matrix[row][col] = newCell;}
 
 	fill(salt, visibility) {
 		for (var numRow = 0; numRow < this.rows; numRow++) {
@@ -62,7 +62,7 @@ class Board {
 
 	    for (let x = 0; x < this.cols; x++) {
 	        for (let y = 0; y < this.rows; y++) {
-	    		let cVal = this.get_cell(x, y).salt * 32;
+	    		let cVal = this.getCell(x, y).salt * 32;
 	    		let cellColor = new Color(cVal);
 
 	            this.cx.lineWidth = "1";

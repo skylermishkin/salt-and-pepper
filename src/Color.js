@@ -49,6 +49,14 @@ class Color {
 		this.values(newValues);
 	}
 
+	complement() {
+		var newValues = [];
+		for (var i = 0; i < 3; i++) {
+			newValues[i] = 255 - this.values[i];
+		}
+		return new Color(newValues[0], newValues[1], newValues[2]);
+	}
+
 	css() {
         return "rgb(" + 
         	Math.round(this._red) + 

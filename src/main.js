@@ -4,32 +4,50 @@ import Position from "./Position.js"
 
 //global declarations
 var SETTINGS = {
+    //window related
+    'width' : null, //set onload
+    'height' : null,  //set onload
+
     //game related
-    'interval' : 1000, //in milliseconds
+    'level' : null,
+    'moves' : null,
+    'score' : null,
+    'interval' : null,
 
     //board related
-	'rows' : 10,
-	'cols' : 10,
-	'initVisibility' : 1,
+	'rows' : null,
+	'cols' : null,
+    'boardWidth' : null, //set onload
+    'boardHeight' : null, //set onload
+	'initVisibility' : null,
+    'saltMatrix' : null,
+    'visibilityMatrix' : null,
 
     //player related
-	'gravity' : 1,
-    'saltColor': new Color(255),
-    'pepperColor': new Color(0),
+    'playerRadius' : null, //set onload
+	'gravity' : null,
+    'saltColor': null,
+    'pepperColor': null,
 
     //beacon related
-    'beaconRadius': 100  // in pixels
+    'beaconReach': null
 };
 var OPTIONS = {
-	'paused' : true,
-    'volume' : 5
+	'paused' : null,
+    'volume' : null
 };
 var CX;
-var GAME;
+var GAME = null;
 
-window.requestAnimationFrame = window.requestAnimationFrame || window.webkitRequestAnimationFrame;
+window.requestAnimationFrame = window.requestAnimationFrame || window.mozRequestAnimationFrame || window.webkitRequestAnimationFrame || window.msRequestAnimationFrame;
+window.cancelAnimationFrame = window.cancelAnimationFrame || windo.mozCancelAnimationFrame;
+
 
 onload = function() {
+    // default settings and options
+    defaultSettings();
+    defaultOptions();
+
     // menu prep
     initializeMenu();
     let menu = document.getElementById('menu');
@@ -47,11 +65,42 @@ onload = function() {
         SETTINGS['boardHeight'] = SETTINGS['width'];
     }
     // player sizing
-    SETTINGS['playerRadius'] = SETTINGS['boardWidth'] / 30;
+    SETTINGS['playerRadius'] = SETTINGS['boardWidth'] / 40;
 
     // canvas prep
     initializeCanvas();
 };
+
+//----------------------------------------------------------------------------
+
+//----------------------------------------------------------------------------
+
+function defaultSettings(level) {
+    //game related
+    SETTINGS['level'] = null;
+    SETTINGS['moves'] = 0;
+    SETTINGS['score'] = 0;
+    SETTINGS['interval'] = 1000; // in milliseconds
+    //board related
+    SETTINGS['rows'] = 10;
+    SETTINGS['cols'] = 10;
+    SETTINGS['initVisibility'] = 1;
+    SETTINGS['saltMatrix'] = null;
+    SETTINGS['visibilityMatrix'] = null;
+    //player related
+    SETTINGS['gravity'] = 1;
+    SETTINGS['saltColor'] = new Color(255);
+    SETTINGS['pepperColor'] = new Color(0);
+    //beacon related
+    SETTINGS['beaconReach'] = 3;  // in tiles
+}
+
+//----------------------------------------------------------------------------
+
+function defaultOptions() {
+    OPTIONS['paused'] = true;
+    OPTIONS['volume'] = 5;
+}
 
 //----------------------------------------------------------------------------
 
@@ -66,19 +115,14 @@ function initializeCanvas() {
 //----------------------------------------------------------------------------
 
 function initializeMenu() {
+    // static structure
     let menuHTML = 
         `<table>
             <tr>
                 <td><h2>Game Menu</h2></td>
                 <td></td>
                 <td>Choose a level:</td>
-                <td><select id="levelSelect">
-                    <option value=1>Lvl 1</option>
-                    <option value=2>Lvl 2</option>
-                    <option value=3>Lvl 3</option>
-                    <option value=4>Lvl 4</option>
-                    <option value=5>Lvl 5</option>
-                </select></td>
+                <td><input id="levelSelect" type="number" min="1" value="1"></td>
                 <td><button id='loadButton'>Load</button></td>
             </tr>
             <tr>
@@ -93,12 +137,14 @@ function initializeMenu() {
                 <td><p id='message'></p></td>
             </tr>
         </table>`;
-
+    // final touches
     let menu = document.createElement("div");
     menu.setAttribute("id", "menu");
     menu.innerHTML = menuHTML;
-    menu.style.width = SETTINGS['width'] / 5;
-    document.body.insertBefore(menu, document.body.childNodes[0]);    
+    menu.style.width = SETTINGS['width'];
+    document.body.insertBefore(menu, document.body.childNodes[0]);
+    document.getElementById('levelSelect').max = SETTINGS['rows'] * SETTINGS['cols'] / 2;
+    
     setMenuListeners();
 }
 
@@ -106,8 +152,7 @@ function initializeMenu() {
 
 function setMenuListeners() {
     document.getElementById('loadButton').addEventListener("click", function (e) {
-        let selector = document.getElementById('levelSelect');
-        loadGame(selector.options[selector.selectedIndex].value);
+        loadGame(document.getElementById('levelSelect').value);
     });
 }
 
@@ -116,24 +161,36 @@ function setMenuListeners() {
 function loadGame(level) {
     //confirm load
     if (confirm("Loading a level will cause unsaved progress to be lost.\nContinue with load?")) {
-        GAME = undefined;
+        //kill listeners and delete old GAME
+        if (GAME != null) {
+            GAME.quit();
+            GAME = null;
+        }
+        // prep settings and options
+        defaultSettings();
         levelSettings(level);
+        defaultOptions();
+        console.log("loading new game:", SETTINGS, OPTIONS);  //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        
         initializeGame(CX, SETTINGS, OPTIONS);
     }
 }
 
-//----------------------------------------------------------------------------
-
-function levelSettings(level) {
-    SETTINGS['threshold'] = level;
+function levelSettings(level) {  //BUG: set not actually composed of only unique (observe for high levels)
+    //set threshold settings
+    SETTINGS['level'] = level;
+    document.getElementById('threshold').innerHTML = SETTINGS['level'];
     
-    //simple random x,y generator according to level (can make two salts on the same spot)
-    var randX = [];
-    var randY = [];
+    //simple random x,y generator according to level
+    let randPoints = new Set();
     for (let i = 0; i < level; i++) {
-        randX.push(getRandomIntInclusive(0,SETTINGS['cols']-1));
-        randY.push(getRandomIntInclusive(0,SETTINGS['rows']-1));
+        while (randPoints.size < i+1) { //try again if randPoints already included that point
+            let x = getRandomIntInclusive(0,SETTINGS['cols']-1);
+            let y = getRandomIntInclusive(0,SETTINGS['rows']-1);
+            randPoints.add([x,y]);
+        }
     }
+    let randPointsIter = randPoints.values();
 
     //initialize saltMatrix and visibilityMatrix with 0's
     var saltMatrix = [];
@@ -147,8 +204,9 @@ function levelSettings(level) {
         visibilityMatrix.push(row);
     }
     //sprinkle salt
-    for (let i = 0; i < level; i++) {
-        saltMatrix[randX[i]][randY[i]] = 8;
+    for (let i = 0; i < randPoints.size; i++) {
+        let point = randPointsIter.next().value;
+        saltMatrix[point[0]][point[1]] = 8;
     }
 
     SETTINGS['saltMatrix'] = saltMatrix;

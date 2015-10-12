@@ -6,20 +6,32 @@ class Player {
 		this._color = color;
 		this._radius = radius;
 
-        this._moveable = true;
+        this._frozen = false;
 	}
 
 	get position() {return this._position;}
-	set position(p) {if (this._moveable) {this._position = p;}}
+	set position(p) {this._position = p;}
 	get color() {return this._color;}
 	set color(c) {this._color = c;}
-	get movability() {return this._moveable;}
-	set movability(m) {this._moveable = m;}
+	get frozen() {return this._frozen;}
+	set frozen(m) {this._frozen = m;}
 
 	paint() {
 		this.cx.save();
 
 		this.cx.lineWidth = "1";
+
+        //paint rim
+        this.cx.strokeStyle = this.color.complement().css();
+        this.cx.fillStyle = this.color.complement().css();
+        this.cx.beginPath();
+        this.cx.arc(this.position.x, this.position.y,
+            this._radius+3,
+            0, 2*Math.PI);
+        this.cx.fill();
+        this.cx.stroke();
+
+        //paint core
         this.cx.strokeStyle = this.color.css();
         this.cx.fillStyle = this.color.css();
         this.cx.beginPath();
@@ -28,7 +40,6 @@ class Player {
         	0, 2*Math.PI);
         this.cx.fill();
         this.cx.stroke();
-        console.log("player painted at:", this.position);  //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 	    this.cx.restore();
 	}
