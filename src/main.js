@@ -14,7 +14,6 @@ var SETTINGS = {
 
     //player related
 	'gravity' : 1,
-    'playerRadius': 20,  // in pixels
     'saltColor': new Color(255),
     'pepperColor': new Color(0),
 
@@ -31,19 +30,15 @@ var GAME;
 window.requestAnimationFrame = window.requestAnimationFrame || window.webkitRequestAnimationFrame;
 
 onload = function() {
-    //grab window dimensions
+    // menu prep
+    initializeMenu();
+    let menu = document.getElementById('menu');
+
+    // grab window dimensions, set more SETTINGS
+    // body sizing
     SETTINGS['width'] = document.body.clientWidth;
     SETTINGS['height'] = document.body.clientHeight;
-
-    initializeMenu();
-    initializeCanvas();
-};
-
-//----------------------------------------------------------------------------
-
-function initializeCanvas() {
-    let menu = document.getElementById('menu');
-    //size canvas
+    // canvas sizing
     if (SETTINGS['width'] > SETTINGS['height'] - menu.offsetHeight) {
         SETTINGS['boardWidth'] = SETTINGS['height'] - menu.offsetHeight;
         SETTINGS['boardHeight'] = SETTINGS['height'] - menu.offsetHeight;
@@ -51,6 +46,17 @@ function initializeCanvas() {
         SETTINGS['boardWidth'] = SETTINGS['width'];
         SETTINGS['boardHeight'] = SETTINGS['width'];
     }
+    // player sizing
+    SETTINGS['playerRadius'] = SETTINGS['boardWidth'] / 30;
+
+    // canvas prep
+    initializeCanvas();
+};
+
+//----------------------------------------------------------------------------
+
+function initializeCanvas() {
+    //size canvas
     document.querySelector("canvas").width = SETTINGS['boardWidth'];
     document.querySelector("canvas").height = SETTINGS['boardHeight'];
 
@@ -60,33 +66,32 @@ function initializeCanvas() {
 //----------------------------------------------------------------------------
 
 function initializeMenu() {
-    let menuHTML = `<h2>Game Menu</h2>
-        <table>
+    let menuHTML = 
+        `<table>
             <tr>
-                <td>To win</td>
+                <td><h2>Game Menu</h2></td>
                 <td></td>
+                <td>Choose a level:</td>
+                <td><select id="levelSelect">
+                    <option value=1>Lvl 1</option>
+                    <option value=2>Lvl 2</option>
+                    <option value=3>Lvl 3</option>
+                    <option value=4>Lvl 4</option>
+                    <option value=5>Lvl 5</option>
+                </select></td>
+                <td><button id='loadButton'>Load</button></td>
             </tr>
             <tr>
-                <td></td>
-                <td></td>
+                <td align='right'><h3>To win:</h3></td>
+                <td><h3 id="threshold">0</h3></td>
+                <td align='right'><h3>Score:</h3></td>
+                <td><h3 id="score">0</h3></td>
+                <td align='right'><h3>Moves:</h3></td>
+                <td><h3 id="moves">0</h3></td>
             </tr>
             <tr>
-                <td></td>
-                <td></td>
+                <td><p id='message'></p></td>
             </tr>
-
-            <h3 id="threshold">To win: 0</h3>
-            <h3 id="score">Score: 0</h3>
-            <h3 id="moves">Moves: 0</h3>
-            <p>Choose a level</p>
-            <select id="levelSelect">
-                <option value=1>Lvl 1</option>
-                <option value=2>Lvl 2</option>
-                <option value=3>Lvl 3</option>
-                <option value=4>Lvl 4</option>
-                <option value=5>Lvl 5</option>
-            </select>
-            <button id='loadButton'>Load</button>
         </table>`;
 
     let menu = document.createElement("div");
@@ -164,6 +169,9 @@ function initializeGame(cx, settings, options) {
 	GAME = new Game(cx, settings, options);
 
 	GAME.board.paint();
+    GAME.setListeners();
+    GAME.salt.paint();
+    GAME.setBoard();
 }
 
 //----------------------------------------------------------------------------

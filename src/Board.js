@@ -63,7 +63,7 @@ class Board {
 	    for (let x = 0; x < this.cols; x++) {
 	        for (let y = 0; y < this.rows; y++) {
 	    		let cVal = this.get_cell(x, y).salt * 32;
-	    		let cellColor = new Color(cVal, cVal, cVal);
+	    		let cellColor = new Color(cVal);
 
 	            this.cx.lineWidth = "1";
 	            this.cx.strokeStyle = cellColor.css();

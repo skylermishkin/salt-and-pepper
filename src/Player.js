@@ -4,13 +4,13 @@ class Player {
 
 		this._position = position;
 		this._color = color;
-		this._radius =radius;
+		this._radius = radius;
 
         this._moveable = true;
 	}
 
 	get position() {return this._position;}
-	set position(p) {this._position = p;}
+	set position(p) {if (this._moveable) {this._position = p;}}
 	get color() {return this._color;}
 	set color(c) {this._color = c;}
 	get movability() {return this._moveable;}
@@ -28,6 +28,7 @@ class Player {
         	0, 2*Math.PI);
         this.cx.fill();
         this.cx.stroke();
+        console.log("player painted at:", this.position);  //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 	    this.cx.restore();
 	}
