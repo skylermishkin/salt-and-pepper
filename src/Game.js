@@ -207,7 +207,7 @@ class Game {
 		this.salt.xVelocity = vfx;
 		this.salt.yVelocity = vfy;
 		this.salt.move(dx,dy);
-		console.log(this.salt.position);
+		console.log("salt at:", this.salt.position);//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 	}
 
 
