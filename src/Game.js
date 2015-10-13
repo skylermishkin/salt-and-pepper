@@ -21,9 +21,23 @@ class Game {
 		this.animation = null;
 
 		this.completed = false;
-		this.board = new Board(cx, settings['boardWidth'], settings['boardHeight'], settings['rows'], settings['cols'], settings['saltMatrix'], settings['visibilityMatrix']);
-		this.salt = new Player(cx, new Position(settings['boardWidth']/2, settings['boardHeight']/2), settings['saltColor'], settings['playerRadius']);
-		this.pepper = new Player(cx, null, settings['pepperColor'], settings['playerRadius']);
+		this.board = new Board(cx, 
+			settings['boardWidth'], 
+			settings['boardHeight'], 
+			settings['rows'], 
+			settings['cols'], 
+			settings['saltMatrix'], 
+			settings['visibilityMatrix']);
+		this.salt = new Player(cx, 
+			new Position(settings['boardWidth']/2, settings['boardHeight']/2),
+			0, 0,
+			settings['saltColor'], 
+			settings['playerRadius']);
+		this.pepper = new Player(cx, 
+			null, 
+			0, 0,
+			settings['pepperColor'], 
+			settings['playerRadius']);
 	}
 
 
@@ -116,14 +130,12 @@ class Game {
 
 
 	play() {
-		if (this.pepper.position != null) {  //nothing to animate if pepper not on board
+		if (this.pepper.position != null) {  // nothing to animate if pepper not on board
 			console.log("salt start:", this.salt.position);  //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 			console.log("pepper start:", this.pepper.position);  //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 			this.animation = window.requestAnimationFrame(this.render.bind(this));
-			/*
-		    this.frames = window.setInterval(function() {this.nextFrame().bind(this);}, 17);
-		    this.phases = window.setInterval(function() {this.nextPhase().bind(this);}, this.settings['interval']);
-			*/
+		    this.frames = window.setInterval(this.nextFrame.bind(this), this.settings['frameDuration']);
+		    this.phases = window.setInterval(this.nextPhase.bind(this), this.settings['interval']);
 		}
 	}
 
@@ -131,12 +143,10 @@ class Game {
 	pause() {
 		window.cancelAnimationFrame(this.animation);
 		this.animation = null;
-		/*
 		window.clearInterval(this.frames);
 		this.frames = null;
 		window.clearInterval(this.phases);  //this will cause a bug where pause->play resets the phase (doesn't track how much of the phase elapsed when paused)
 		this.phases = null;
-		*/
 	}
 
 
@@ -162,12 +172,48 @@ class Game {
 
 	nextFrame() {
 		//todo: update all player and beacon positions
+		this.moveSalt();
+	}
+
+
+	moveSalt() {
+		// givens
+		let g = this.settings['gravity'];
+		let r = this.salt.position.distanceFrom(this.pepper.position);
+		let t = this.settings['frameDuration'] / 1000;  // in seconds
+		let x = this.pepper.position.x - this.salt.position.x;
+		let y = this.pepper.position.y - this.salt.position.y;
+		let vix = this.salt.xVelocity;
+		let viy = this.salt.yVelocity;
+
+		// cache some useful expressions
+		let beta = (r*r + x*x - y*y)/(2*r*x);
+		let alpha = g / (r*r);
+		let gamma = t*t / 2;
+
+		// calc component final velocities and distancesTraveled
+		let vfx, dx, vfy, dy;
+		vfx = vix + alpha*beta;
+		dx = vix*t + gamma*alpha*beta;
+		if (y > 0) {  //siily y component needs direction
+			vfy = viy + alpha*Math.sin(Math.acos(beta));
+			dy = viy*t + gamma*alpha*Math.sin(Math.acos(beta));
+		} else {
+			vfy = viy - alpha*Math.sin(Math.acos(beta));
+			dy = viy*t - gamma*alpha*Math.sin(Math.acos(beta));
+		}
+
+		// set new kinematic data
+		this.salt.xVelocity = vfx;
+		this.salt.yVelocity = vfy;
+		this.salt.move(dx,dy);
+		console.log(this.salt.position);
 	}
 
 
 	nextPhase() {
 		this.collectSalt;
-		this.pepper.movability = true;
+		this.pepper.frozen = false;
 	}
 
 

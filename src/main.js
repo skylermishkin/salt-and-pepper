@@ -13,6 +13,7 @@ var SETTINGS = {
     'moves' : null,
     'score' : null,
     'interval' : null,
+    'frameDuration' : null,
 
     //board related
 	'rows' : null,
@@ -81,6 +82,7 @@ function defaultSettings(level) {
     SETTINGS['moves'] = 0;
     SETTINGS['score'] = 0;
     SETTINGS['interval'] = 1000; // in milliseconds
+    SETTINGS['frameDuration'] = 17;  // in milliseconds
     //board related
     SETTINGS['rows'] = 10;
     SETTINGS['cols'] = 10;
@@ -88,7 +90,7 @@ function defaultSettings(level) {
     SETTINGS['saltMatrix'] = null;
     SETTINGS['visibilityMatrix'] = null;
     //player related
-    SETTINGS['gravity'] = 1;
+    SETTINGS['gravity'] = 3000;
     SETTINGS['saltColor'] = new Color(255);
     SETTINGS['pepperColor'] = new Color(0);
     //beacon related

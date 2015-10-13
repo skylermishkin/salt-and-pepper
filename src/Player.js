@@ -1,8 +1,10 @@
 class Player {
-	constructor(cx, position, color, radius) {
+	constructor(cx, position, xVelocity, yVelocity, color, radius) {
 		this.cx = cx;
 
 		this._position = position;
+        this._xvelocity = xVelocity;
+        this._yvelocity = yVelocity;
 		this._color = color;
 		this._radius = radius;
 
@@ -11,10 +13,22 @@ class Player {
 
 	get position() {return this._position;}
 	set position(p) {this._position = p;}
+
+    get xVelocity() {return this._xvelocity;}
+    set xVelocity(v) {this._xvelocity = v;}
+
+    get yVelocity() {return this._yvelocity;}
+    set yVelocity(v) {this._yvelocity = v;}
+
 	get color() {return this._color;}
 	set color(c) {this._color = c;}
+
 	get frozen() {return this._frozen;}
 	set frozen(m) {this._frozen = m;}
+
+    move(x,y) {
+        this._position.move(x,y);
+    }
 
 	paint() {
 		this.cx.save();
