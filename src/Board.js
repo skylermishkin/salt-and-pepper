@@ -24,6 +24,28 @@ class Board {
 	getCell(row, col) {return this.matrix[row][col];}
 	setCell(row, col, newCell) {this.matrix[row][col] = newCell;}
 
+	getCellByCoordinates(x, y) {  // still some bugs with edge of map
+		let cellWidth = this.width / this.cols;
+	    let cellHeight = this.height / this.rows;
+
+	    if (x < this.width && y < this.height) { // if salt is on the board
+	    	let row, col;
+		    for (let i = 1; i <= this.rows; i++) {
+		    	if (y < i*cellHeight) {
+		    		row = i;
+		    		break;
+		    	}
+		    }
+	    	for (let j = 1; j <= this.cols; j++) {
+	    		if (x < j*cellWidth) {
+	    			col = j;
+	    			break;
+	    		}
+	    	}
+	    	return this.getCell(row, col);
+		} else return null; // when salt is off the board
+	}
+
 	fill(salt, visibility) {
 		for (var numRow = 0; numRow < this.rows; numRow++) {
 			for (var numCol = 0; numCol < this.cols; numCol++) {

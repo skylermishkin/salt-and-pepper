@@ -10,6 +10,7 @@ var SETTINGS = {
 
     //game related
     'level' : null,
+    'threshold' : null,
     'moves' : null,
     'score' : null,
     'interval' : null,
@@ -79,6 +80,7 @@ onload = function() {
 function defaultSettings(level) {
     //game related
     SETTINGS['level'] = null;
+    SETTINGS['threshold'] = null;
     SETTINGS['moves'] = 0;
     SETTINGS['score'] = 0;
     SETTINGS['interval'] = 1000; // in milliseconds
@@ -90,7 +92,7 @@ function defaultSettings(level) {
     SETTINGS['saltMatrix'] = null;
     SETTINGS['visibilityMatrix'] = null;
     //player related
-    SETTINGS['gravity'] = 3000;
+    SETTINGS['gravity'] = 5/100000;
     SETTINGS['saltColor'] = new Color(255);
     SETTINGS['pepperColor'] = new Color(0);
     //beacon related
@@ -181,7 +183,8 @@ function loadGame(level) {
 function levelSettings(level) {  //BUG: set not actually composed of only unique (observe for high levels)
     //set threshold settings
     SETTINGS['level'] = level;
-    document.getElementById('threshold').innerHTML = SETTINGS['level'];
+    SETTINGS['threshold'] = level * 8;
+    document.getElementById('threshold').innerHTML = SETTINGS['threshold'];
     
     //simple random x,y generator according to level
     let randPoints = new Set();

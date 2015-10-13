@@ -173,21 +173,25 @@ class Game {
 	nextFrame() {
 		//todo: update all player and beacon positions
 		this.moveSalt();
+        // may be cool to calc escape velocity to see if Salt has escaped into the infinite and report to user
 	}
 
 
 	moveSalt() {
-		// givens
-		let g = this.settings['gravity'];
-		let r = this.salt.position.distanceFrom(this.pepper.position);
-		let t = this.settings['frameDuration'] / 1000;  // in seconds
-		let x = this.pepper.position.x - this.salt.position.x;
-		let y = this.pepper.position.y - this.salt.position.y;
-		let vix = this.salt.xVelocity;
-		let viy = this.salt.yVelocity;
+        // screen sizing scalar
+        let scalar = this.settings['boardHeight'];
+		
+        // givens
+        let g = this.settings['gravity'] * scalar*scalar*scalar; //scaled
+        let t = this.settings['frameDuration'] / 1000;  // in seconds
+        let vix = this.salt.xVelocity;
+        let viy = this.salt.yVelocity;
+		let r = (this.salt.position.distanceFrom(this.pepper.position));
+		let x = (this.pepper.position.x - this.salt.position.x);
+		let y = (this.pepper.position.y - this.salt.position.y);
 
 		// cache some useful expressions
-		let beta = (r*r + x*x - y*y)/(2*r*x);
+		let beta = (r*r + x*x - y*y) / (2*r*x);
 		let alpha = g / (r*r);
 		let gamma = t*t / 2;
 
@@ -207,18 +211,25 @@ class Game {
 		this.salt.xVelocity = vfx;
 		this.salt.yVelocity = vfy;
 		this.salt.move(dx,dy);
-		console.log("salt at:", this.salt.position);//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+		console.log("salt at:", this.salt.position.x, ",", this.salt.position.y); //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 	}
 
 
 	nextPhase() {
-		this.collectSalt;
+		this.collectSalt();
 		this.pepper.frozen = false;
 	}
 
 
 	collectSalt() {
-		//todo: lower salt level that this.salt.position is on
+        let cell = this.board.getCellByCoordinates(this.salt.position.x, this.salt.position.y);
+        if (cell != null && cell.salt > 0) {
+            // increment score
+            this.settings['score'] += 1;
+            document.getElementById('score').innerHTML = this.settings['score'];
+            // lower salt
+            cell.salt -= 1;
+        }
 	}
 };
 
