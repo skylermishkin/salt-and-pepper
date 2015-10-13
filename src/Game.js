@@ -125,8 +125,18 @@ class Game {
 		// set pepper
 		this.clickCXPosition = null;
 		this.activeObject = this.pepper;
-		//alert("Select where Pepper should start.");
+        
+        let wait = window.setTimeout(this.playIfSet.bind(this), 200);
 	}
+
+
+    playIfSet() {
+        if (this.pepper.position != null) {
+            this.play();
+        } else {
+            let wait = window.setTimeout(this.playIfSet.bind(this), 200);
+        }
+    }
 
 
 	play() {

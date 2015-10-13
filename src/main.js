@@ -102,7 +102,7 @@ function defaultSettings(level) {
 //----------------------------------------------------------------------------
 
 function defaultOptions() {
-    OPTIONS['paused'] = true;
+    OPTIONS['paused'] = false;
     OPTIONS['volume'] = 5;
 }
 
@@ -164,7 +164,7 @@ function setMenuListeners() {
 
 function loadGame(level) {
     //confirm load
-    if (confirm("Loading a level will cause unsaved progress to be lost.\nContinue with load?")) {
+    if (confirm("To play, click on the board where you would like to start Pepper.")) {
         //kill listeners and delete old GAME
         if (GAME != null) {
             GAME.quit();
@@ -232,9 +232,10 @@ function initializeGame(cx, settings, options) {
 	GAME = new Game(cx, settings, options);
 
 	GAME.board.paint();
-    GAME.setListeners();
     GAME.salt.paint();
+    GAME.setListeners();
     GAME.setBoard();
+    GAME.play();
 }
 
 //----------------------------------------------------------------------------
