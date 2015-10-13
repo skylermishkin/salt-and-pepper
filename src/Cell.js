@@ -11,8 +11,8 @@ class Cell {
 	get visibility() {return this._visibility;}
 	set visibility(v) {this._visibility = v;}
 
-	lower_salt(amount) {this.salt -= amount;}
-	increase_salt(amount) {this.salt += amount;}
+	lowerSalt(amount) {this._salt -= amount;}
+	increaseSalt(amount) {this._salt += amount;}
 };
 
 export default Cell;

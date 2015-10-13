@@ -21,14 +21,14 @@ class Board {
 		}
 	}
 	
-	getCell(row, col) {return this.matrix[row][col];}
-	setCell(row, col, newCell) {this.matrix[row][col] = newCell;}
+	getCell(row, col) {return this.matrix[row-1][col-1];}
+	setCell(row, col, newCell) {this.matrix[row-1][col-1] = newCell;}
 
-	getCellByCoordinates(x, y) {  // still some bugs with edge of map
+	getCellByCoordinates(x, y) {  //BUGGY
 		let cellWidth = this.width / this.cols;
 	    let cellHeight = this.height / this.rows;
 
-	    if (x < this.width && y < this.height) { // if salt is on the board
+	    if (x > 0 && y > 0 && x < this.width && y < this.height) { // if salt is on the board
 	    	let row, col;
 		    for (let i = 1; i <= this.rows; i++) {
 		    	if (y < i*cellHeight) {
@@ -76,22 +76,22 @@ class Board {
 		}
 	}
 
-	paint() {
+	paint() {  // does not include visibility
 		this.cx.save();
 
 	    let cellWidth = this.width / this.cols;
 	    let cellHeight = this.height / this.rows;
 
-	    for (let x = 0; x < this.cols; x++) {
-	        for (let y = 0; y < this.rows; y++) {
-	    		let cVal = this.getCell(x, y).salt * 32;
+	    for (let row = 1; row <= this.rows; row++) {
+	        for (let col = 1; col <= this.cols; col++) {
+	    		let cVal = this.getCell(row, col).salt * 32; // 8-bit salting
 	    		let cellColor = new Color(cVal);
 
 	            this.cx.lineWidth = "1";
 	            this.cx.strokeStyle = cellColor.css();
 	            this.cx.fillStyle = cellColor.css();
 	            this.cx.beginPath();
-	            this.cx.rect(cellWidth * x, cellHeight * y, cellWidth, cellHeight);
+	            this.cx.rect(cellHeight * (col-1), cellWidth * (row-1), cellWidth, cellHeight);
 	            this.cx.fill();
 	            this.cx.stroke();
 	        }

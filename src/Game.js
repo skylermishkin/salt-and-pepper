@@ -96,7 +96,7 @@ class Game {
         let yPos = e.clientY;
     	let offset = this.getOffset(document.querySelector('canvas'));
         this.clickCXPosition = new Position(xPos-offset['left'], yPos-offset['top']);
-        console.log("position captured:", this.clickCXPosition);  //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        //console.log("position captured:", this.clickCXPosition);  //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         if (this.activeObject != null && this.activeObject.frozen == false) {
         	if (this.activeObject == this.pepper) {
         		this.settings['moves'] += 1;
@@ -104,7 +104,7 @@ class Game {
         	}
         	this.activeObject.position = this.clickCXPosition;
         	this.activeObject.frozen = true;
-        	console.log("position set for:", this.activeObject);  //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        	//console.log("position set for:", this.activeObject);  //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         }
 	}
 
@@ -125,7 +125,7 @@ class Game {
 		// set pepper
 		this.clickCXPosition = null;
 		this.activeObject = this.pepper;
-		alert("Select where Pepper should start.");
+		//alert("Select where Pepper should start.");
 	}
 
 
@@ -151,7 +151,7 @@ class Game {
 
 
 	render() {
-		console.log("rendered");  //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+		//console.log("rendered");  //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 		//cover all
 		this.cx.lineWidth = "1";
         this.cx.strokeStyle = "black";
@@ -211,26 +211,32 @@ class Game {
 		this.salt.xVelocity = vfx;
 		this.salt.yVelocity = vfy;
 		this.salt.move(dx,dy);
-		console.log("salt at:", this.salt.position.x, ",", this.salt.position.y); //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+		//console.log("salt at:", this.salt.position.x, ",", this.salt.position.y); //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 	}
 
 
 	nextPhase() {
 		this.collectSalt();
+        this.checkCompletion();
 		this.pepper.frozen = false;
+        console.log("new phase");
 	}
 
 
 	collectSalt() {
-        let cell = this.board.getCellByCoordinates(this.salt.position.x, this.salt.position.y);
-        if (cell != null && cell.salt > 0) {
+        let zone = this.board.getCellByCoordinates(this.salt.position.x, this.salt.position.y);
+        if (zone != null && zone.salt > 0) {
             // increment score
             this.settings['score'] += 1;
-            document.getElementById('score').innerHTML = this.settings['score'];
             // lower salt
-            cell.salt -= 1;
+            zone.lowerSalt(1);
+            document.getElementById('score').innerHTML = this.settings['score'];
         }
 	}
+
+    checkCompletion() {
+        //todo: see if score >= threshold
+    }
 };
 
 export default Game;
