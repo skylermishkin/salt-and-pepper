@@ -11,6 +11,10 @@ import Vector2 from 'math/Vector2'
 import Color from 'game/Color'
 
 
+// global time step
+const dt = 0.1
+
+
 export default class Root extends Component {
     constructor(...args) {
         // instantiate `this`
@@ -25,13 +29,13 @@ export default class Root extends Component {
         board.sprinkle(initialLevel)
 
         const salt = new Player({
-            position: new Vector2(100, 100),
+            position: new Vector2(50, 50),
             velocity: new Vector2(),
             color: new Color(200, 4, 1),
             radius: 10,
         })
         const pepper = new Player({
-            position: new Vector2(500, 300),
+            position: new Vector2(50, 50),
             velocity: new Vector2(),
             color: new Color(100, 200, 3),
             radius: 20,
@@ -100,9 +104,26 @@ export default class Root extends Component {
 
 
     loopAnimation() {
+        const {salt, pepper, board, isPaused} = this.state
+        // the amount of dust leeched from the board by salt
+        const leeched = board.leech(salt.position)
+        this.setState({score: this.state.score + leeched})
+
+
+        const saltToPepper = pepper.position.minus(salt.position)
+        const saltToPepperMagCubed = saltToPepper.magSq * saltToPepper.mag
+
+        const acceleration = saltToPepper.scale(100 / saltToPepperMagCubed)
+        salt.velocity = salt.velocity.plus(acceleration.scale(dt))
+        salt.position = salt.position.plus(salt.velocity.scale(dt))
+
+
+        // draw it all to the canvas
         this.draw()
 
-        if (!this.state.isPaused) {
+        // if the animation loop has not been cut off
+        if (!isPaused) {
+            // then keep it going
             requestAnimationFrame(() => this.loopAnimation())
         }
     }
@@ -117,7 +138,11 @@ export default class Root extends Component {
         if (!this.state.pepper.isFrozen) {
             // move it to mouse position
             // implicit state mutation ok since state will be updated just below
-            this.state.pepper.position = new Vector2(x, y)
+            this.state.pepper.position = new Vector2(
+                // player position units are percentages relative to canvas size
+                100 * x / this.state.width,
+                100 * y / this.state.height
+            )
         }
 
         const wasPaused = this.state.isPaused
@@ -158,10 +183,7 @@ export default class Root extends Component {
 
     centerSalt(cb) {
         // center salt character
-        this.state.salt.position = new Vector2(
-            this.state.width / 2,
-            this.state.height / 2
-        )
+        this.state.salt.position = new Vector2(50, 50)
         // force update since state mutation above is implicit
         this.forceUpdate(cb)
     }
@@ -177,8 +199,7 @@ export default class Root extends Component {
 
 
     render() {
-        console.log('state', this.state)
-
+        console.log('game state: ', this.state)
 
         return (
             <div style={styles.container}>

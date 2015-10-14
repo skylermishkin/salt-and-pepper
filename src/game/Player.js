@@ -20,16 +20,18 @@ export default class Player {
 
 
 	draw(context) {
+        // dimensions of the entire canvas
+        const width = context.canvas.width
+        const height = context.canvas.height
+		// player position in canvas dimension units
+		const x = width * this.position.x / 100
+		const y = height * this.position.y / 100
+
 		context.lineWidth = 3
         context.strokeStyle = this.color.complement.toString()
         context.fillStyle = this.color.toString()
         context.beginPath()
-        context.arc(
-			...this.position.values,
-        	this.radius,
-        	0,
-			2 * Math.PI
-		)
+        context.arc(x, y, this.radius, 0, 2 * Math.PI)
         context.fill()
         context.stroke()
 

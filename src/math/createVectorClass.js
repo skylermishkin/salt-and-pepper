@@ -108,6 +108,17 @@ export default (length) => {
 		}
 
 
+		scale(scalar) {
+			if (!Number.isFinite(scalar)) {
+				throw new TypeError(`expected finite number, got: ${scalar}`)
+			}
+
+			return new this.constructor(
+				...this.values.map(x => x * scalar)
+			)
+		}
+
+
 		distanceFrom(other) {
 			return this.minus(other).mag
 		}
