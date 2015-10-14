@@ -1,70 +1,167 @@
-class Color {
-	constructor (red, green, blue) {
-		this._red = red || 0; // defaults to black
-		this._green = green != undefined ? green : this._red;
-		this._blue = blue != undefined ? blue : this._red;
-	}
-	
-	get red() {return this._red;}
-	set red(value) {this._red = value;}
-	get green() {return this._green;}
-	set green(value) {this._green = value;}
-	get blue() {return this._blue;}
-	set blue(value) {this._blue = value;}
-	get values() {return [this._red, this._green, this._blue];}
-	set values(vals) {	this._red = vals[0];
-							this._green = vals[1];
-							this._blue = vals[2];
-						}
+// local imports
+import Vector3 from 'math/Vector3'
 
-	brighten(amount) {  //adds amount to each color value
-		var newValues = [];
-		for (var i = 0; i < 3; i++) {
-			newValues[i] = this.values[i] + amount;
+
+/**
+ * An rgb color.
+ * @class
+ */
+export default class Color extends Vector3 {
+	// static fromVector3(vector) {
+	// 	if (!(vector instanceof Vector3)) {
+	// 		throw new TypeError(`expected Vector3 instance, got: ${vector}`)
+	// 	}
+	//
+	// 	return new this(...vector.toArray())
+	// }
+
+
+	constructor(...args) {
+		let r, g, b, a
+		// if no arguments passed
+		if (!args.length) {
+			// default to black
+			r = 0
+			g = 0
+			b = 0
+			a = 1
+		// if one arg passed
+		} else if (args.length === 1) {
+			// set it to that value of grey
+			r = args[0]
+			g = args[0]
+			b = args[0]
+			// and default opacity to 1
+			a = 1
+		// if two args passed
+		} else if (args.length === 2) {
+			// use first arg for grey value
+			r = args[0]
+			g = args[0]
+			b = args[0]
+			// use second arg for opacity value
+			a = args[1]
+		// if three args passed
+		} else if (args.length === 3) {
+			// use them as rgb
+			r = args[0]
+			g = args[1]
+			b = args[2]
+			// and default opacity to 1
+			a = 1
+		// if four args passed
+		} else if (args.length === 4) {
+			// use them as rgba
+			r = args[0]
+			g = args[1]
+			b = args[2]
+			a = args[3]
 		}
-		this.values(newValues);
+
+		super(r, g, b)
+		this.a = a
 	}
 
-	addRed(amount) {
-		this._red += amount;
+
+	toString() {
+        return `rgba(${this.r}, ${this.g}, ${this.b}, ${this.a})`
 	}
 
-	addGreen(amount) {
-		this._green += amount;
+
+	toVector3() {
+		return new Vector3(...this.toArray())
 	}
 
-	addBlue(amount) {
-		this._blue += amount;
+
+	get r() {
+		return this.x
 	}
 
-	standardize() {  //ensures colors are in range 0->255
-		var newValues = [];
-		for (var i = 0; i < 3; i++) {
-			if (this.values[i] > 255) {
-				newValues[i] = 255;
-			} else if (this.values[i] < 0) {
-				newValues[i] = 0;
-			}
+
+	set r(r) {
+		if (!(r >= 0 && r < 256 && r === Math.floor(r))) {
+			throw new TypeError(`expected integer in [0, 256), got: ${r}`)
 		}
-		this.values(newValues);
+
+		this.x = r
 	}
+
+
+	get g() {
+		return this.y
+	}
+
+
+	set g(g) {
+		if (!(g >= 0 && g < 256 && g === Math.floor(g))) {
+			throw new TypeError(`expected integer in [0, 256), got: ${g}`)
+		}
+
+		this.y = g
+	}
+
+
+	get b() {
+		return this.z
+	}
+
+
+	set b(b) {
+		if (!(b >= 0 && b < 256 && b === Math.floor(b))) {
+			throw new TypeError(`expected integer in [0, 256), got: ${b}`)
+		}
+
+		this.z = b
+	}
+
+
+	get a() {
+		return this._a
+	}
+
+
+	set a(a) {
+		if (!(a >= 0 && a <= 1)) {
+			throw new TypeError(`expected number in [0, 1], got: ${a}`)
+		}
+
+		this._a = a
+	}
+
+
+	plus(other) {
+		return new this.constructor(
+			...super.plus(other).values.map(x => {
+				if (x > 255) {
+					return 255
+				}
+				if (x < 0) {
+					return 0
+				}
+				return x
+			}),
+			this.a
+		)
+	}
+
+
+	minus(other) {
+		return new this.constructor(
+			...super.minus(other).values.map(x => {
+				if (x > 255) {
+					return 255
+				}
+				if (x < 0) {
+					return 0
+				}
+				return x
+			}),
+			this.a
+		)
+	}
+
 
 	complement() {
-		var newValues = [];
-		for (var i = 0; i < 3; i++) {
-			newValues[i] = 255 - this.values[i];
-		}
-		return new Color(newValues[0], newValues[1], newValues[2]);
+		return new this.constructor(...this.values.map(x => 255 - x), this.a)
 	}
-
-	css() {
-        return "rgb(" + 
-        	Math.round(this._red) + 
-        	"," + 
-        	Math.round(this._green) + 
-        	"," + 
-        	Math.round(this._blue) + ")";
-	}
-};
-
-export default Color;
+}
