@@ -41,7 +41,7 @@ export default class Board {
 	sprinkle(n) {
 		for (var k = 0; k < n; k++) {
 			this._matrix[random(this._rows - 1)][random(this._cols - 1)] = {
-				dust: random(7),
+				dust: random(255),
 				visibility: 1,	// Skyler: what is this visibility intended to do?
 			}
 		}
@@ -83,7 +83,7 @@ export default class Board {
 	    for (var i = 0; i < this._rows; i++) {
 	        for (var j = 0; j < this._cols; j++) {
 				const cell = this._matrix[i][j]
-	    		const color = new Color(cell.dust * 32, cell.visibility)
+	    		const color = new Color(cell.dust, cell.visibility)
                 // location of upper left corner of cell
                 const x = paddingX + (j * cellWidth)
                 const y = paddingY + (i * cellHeight)
