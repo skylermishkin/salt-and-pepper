@@ -193,8 +193,8 @@ export default class Root extends Component {
         const context = this.refs.canvas.getContext('2d')
 
         this.state.board.draw(context)
-		this.state.salt.draw(context)
-		this.state.pepper.draw(context)
+        this.state.salt.draw(context)
+        this.state.pepper.draw(context)
     }
 
 

@@ -1,21 +1,26 @@
-//node imports
-import path from 'path'
-// gulp imports
+// third party imports
 import gulp from 'gulp'
 import del from 'del'
 import webpack from 'webpack-stream'
 import named from 'vinyl-named'
 import env from 'gulp-env'
+// local imports
+import {
+    buildDir,
+    entry,
+    webpackConfig as webpackConfigPath,
+} from './config/projectPaths'
+const webpackConfig = require(webpackConfigPath)
 
-//test
+
 /**
  * Build entry point.
  */
 gulp.task('build', ['clean'], () => {
-    return gulp.src(path.join(__dirname, "src", "index.js"))
-               .pipe(named())
-               .pipe(webpack(require(path.join(__dirname, "webpack.config.js"))))
-               .pipe(gulp.dest(path.join(__dirname, "build")))
+    return gulp.src(entry)
+        .pipe(named())
+        .pipe(webpack(webpackConfig))
+        .pipe(gulp.dest(buildDir))
 })
 
 
@@ -24,14 +29,14 @@ gulp.task('build', ['clean'], () => {
  */
 gulp.task('watch', ['clean'], () => {
     const config = {
-        ...require(path.join(__dirname, "webpack.config.js")),
+        ...webpackConfig,
         watch: true,
     }
 
-    return gulp.src(path.join(__dirname, "src", "index.js"))
-               .pipe(named())
-               .pipe(webpack(config))
-               .pipe(gulp.dest(path.join(__dirname, "build")))
+    return gulp.src(entry)
+        .pipe(named())
+        .pipe(webpack(config))
+        .pipe(gulp.dest(buildDir))
 })
 
 
@@ -39,17 +44,17 @@ gulp.task('watch', ['clean'], () => {
  * Build entry point for production.
  */
 gulp.task('build-production', ['clean'], () => {
-    // set the environment variable
+    // set environment variable
     env({
         vars: {
             NODE_ENV: 'production',
         },
     })
-    // build the client
-    return gulp.src(path.join(__dirname, "src", "index.js"))
-               .pipe(named())
-               .pipe(webpack(require(path.join(__dirname, "webpack.config.js"))))
-               .pipe(gulp.dest(path.join(__dirname, "build")))
+    // build entry
+    return gulp.src(entry)
+        .pipe(named())
+        .pipe(webpack(webpackConfig))
+        .pipe(gulp.dest(buildDir))
 })
 
 
@@ -57,5 +62,8 @@ gulp.task('build-production', ['clean'], () => {
  * Remove all ouptut files from previous builds.
  */
 gulp.task('clean', () => {
-    del.sync(path.join(__dirname, "build"))
+    del.sync(buildDir)
 })
+
+
+// end of file

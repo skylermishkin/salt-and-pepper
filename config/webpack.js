@@ -1,11 +1,7 @@
-/*
- * Webpack configuration for source builds.
- */
-
-// node imports
-var path = require('path')
 // webpack imports
 var webpack = require('webpack')
+// local imports
+var projectPaths = require('./projectPaths')
 
 
 // default to using development configuration
@@ -26,12 +22,22 @@ if (process.env.NODE_ENV === 'production') {
 // export webpack configuration object
 module.exports = {
     module: {
+        preLoaders: [
+            {
+                test: /\.js$/,
+                loader: 'eslint',
+                include: projectPaths.sourceDir,
+            },
+        ],
         loaders: [
             {
                 test: /\.js$/,
                 loader: 'babel',
-                include: path.join(__dirname, 'src'),
-                query: {stage: 0},
+                include: projectPaths.sourceDir,
+                query: {
+                    optional: ['runtime'],
+                    stage: 0,
+                },
             }, {
                 test: /\.css$/,
                 loaders: ['style', 'css'],
@@ -39,7 +45,12 @@ module.exports = {
         ],
     },
     resolve: {
-        root: path.join(__dirname, 'src'),
+        extensions: ['', '.js'],
+        root: projectPaths.sourceDir,
+    },
+    eslint: {
+        configFile: projectPaths.eslintConfig,
+        failOnError: true,
     },
     plugins: plugins,
     devtool: devtool,

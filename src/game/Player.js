@@ -3,31 +3,31 @@
  * @class
  */
 export default class Player {
-	constructor({position, velocity, color, radius, isFrozen = false}) {
-		this.position = position
+    constructor({position, velocity, color, radius, isFrozen = false}) {
+        this.position = position
         this.velocity = velocity
-		this.color = color
-		this.radius = radius
+        this.color = color
+        this.radius = radius
         this.isFrozen = isFrozen
-	}
+    }
 
 
     move(vector) {
         this.position = this.position.plus(vector)
 
-		return this
+        return this
     }
 
 
-	draw(context) {
+    draw(context) {
         // dimensions of the entire canvas
         const width = context.canvas.width
         const height = context.canvas.height
-		// player position in canvas dimension units
-		const x = width * this.position.x / 100
-		const y = height * this.position.y / 100
+        // player position in canvas dimension units
+        const x = width * this.position.x / 100
+        const y = height * this.position.y / 100
 
-		context.lineWidth = 3
+        context.lineWidth = 3
         context.strokeStyle = this.color.complement.toString()
         context.fillStyle = this.color.toString()
         context.beginPath()
@@ -35,6 +35,6 @@ export default class Player {
         context.fill()
         context.stroke()
 
-		return this
-	}
+        return this
+    }
 }

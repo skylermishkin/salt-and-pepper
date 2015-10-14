@@ -10,7 +10,7 @@ Classes:
         threshold: num score to beat board
         peppermoves: num for how many times Pepper was moved
         beaten: boolean for win status
-        map: matrix corresponding to x,y holding values for: 
+        map: matrix corresponding to x,y holding values for:
             level: num corresponding to how many points can be earned on the space
             hidden: boolean for visibility
     Player:
@@ -45,7 +45,7 @@ Major functions:
     }
     phaseChange() {
         collectSalt() {
-            Board.score += Board.positionScore(Player.Salt.position); 
+            Board.score += Board.positionScore(Player.Salt.position);
             Board.map[Player.Salt.tileX][Player.Salt.tileY].level -= some_amount;
         }
         if (Board.score >= Board.threshold) {

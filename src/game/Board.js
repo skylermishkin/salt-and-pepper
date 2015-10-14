@@ -10,65 +10,65 @@ import Color from './Color'
  * @class
  */
 export default class Board {
-	constructor({rows, cols}) {
-		// TODO: type check here
+    constructor({rows, cols}) {
+        // TODO: type check here
 
-		this._rows = rows
-		this._cols = cols
+        this._rows = rows
+        this._cols = cols
 
-		// initialize `this._matrix`
-		this.clear()
-	}
-
-
-	clear() {
-		this._matrix = []
-		for (var i = 0; i < this._rows; i++) {
-			const row = []
-			for (var j = 0; j < this._cols; j++) {
-				row.push({
-					dust: 0,
-					visibility: 1,
-				})
-			}
-			this._matrix.push(row)
-		}
-
-		return this
-	}
+        // initialize `this._matrix`
+        this.clear()
+    }
 
 
-	sprinkle(n) {
-		for (var k = 0; k < n; k++) {
-			this._matrix[random(this._rows - 1)][random(this._cols - 1)] = {
-				dust: random(255),
-				visibility: 1,	// Skyler: what is this visibility intended to do?
-			}
-		}
+    clear() {
+        this._matrix = []
+        for (var i = 0; i < this._rows; i++) {
+            const row = []
+            for (var j = 0; j < this._cols; j++) {
+                row.push({
+                    dust: 0,
+                    visibility: 1,
+                })
+            }
+            this._matrix.push(row)
+        }
 
-		return this
-	}
-
-
-	leech(position) {
-		const i = Math.round((this._rows - 1) * position.y / 100)
-		const j = Math.round((this._cols - 1) * position.x / 100)
-
-		if (i < 0 || i >= this._rows || j < 0 || j >= this._cols) {
-			return 0
-		}
-
-		const {dust} = this._matrix[i][j]
-
-		if (dust !== 0) {
-			this._matrix[i][j].dust = dust - 1
-			return 1
-		}
-		return 0
-	}
+        return this
+    }
 
 
-	draw(context) {
+    sprinkle(n) {
+        for (var k = 0; k < n; k++) {
+            this._matrix[random(this._rows - 1)][random(this._cols - 1)] = {
+                dust: random(255),
+                visibility: 1,    // Skyler: what is this visibility intended to do?
+            }
+        }
+
+        return this
+    }
+
+
+    leech(position) {
+        const i = Math.round((this._rows - 1) * position.y / 100)
+        const j = Math.round((this._cols - 1) * position.x / 100)
+
+        if (i < 0 || i >= this._rows || j < 0 || j >= this._cols) {
+            return 0
+        }
+
+        const {dust} = this._matrix[i][j]
+
+        if (dust !== 0) {
+            this._matrix[i][j].dust = dust - 1
+            return 1
+        }
+        return 0
+    }
+
+
+    draw(context) {
         // dimensions of the entire canvas
         const width = context.canvas.width
         const height = context.canvas.height
@@ -80,21 +80,21 @@ export default class Board {
         const paddingX = Math.floor(mod(width, this._cols) / 2)
         const paddingY = Math.floor(mod(height, this._rows) / 2)
 
-	    for (var i = 0; i < this._rows; i++) {
-	        for (var j = 0; j < this._cols; j++) {
-				const cell = this._matrix[i][j]
-	    		const color = new Color(cell.dust, cell.visibility)
+        for (var i = 0; i < this._rows; i++) {
+            for (var j = 0; j < this._cols; j++) {
+                const cell = this._matrix[i][j]
+                const color = new Color(cell.dust, cell.visibility)
                 // location of upper left corner of cell
                 const x = paddingX + (j * cellWidth)
                 const y = paddingY + (i * cellHeight)
 
-	            context.lineWidth = 10
-	            context.fillStyle = color.toString()
+                context.lineWidth = 10
+                context.fillStyle = color.toString()
                 // fill the cell
                 context.fillRect(x, y, cellWidth, cellHeight)
-	        }
-	    }
+            }
+        }
 
-		return this
-	}
+        return this
+    }
 }

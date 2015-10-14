@@ -6,11 +6,11 @@ import zip from 'lodash/array/zip'
 
 
 function arrayOfZeroes(length) {
-	const list = []
-	for (var i = 0; i < length; i++) {
-		list.push(0)
-	}
-	return list
+    const list = []
+    for (var i = 0; i < length; i++) {
+        list.push(0)
+    }
+    return list
 }
 
 
@@ -20,107 +20,107 @@ function arrayOfZeroes(length) {
  * @returns Vector class.
  */
 export default (length) => {
-	if (!(length > 0 && Math.floor(length) === length)) {
-		throw new TypeError(`expected a positive integer, got: ${length}`)
-	}
+    if (!(length > 0 && Math.floor(length) === length)) {
+        throw new TypeError(`expected a positive integer, got: ${length}`)
+    }
 
-	return class Vector {
-		static get length() {
-			return length
-		}
-
-
-		constructor(...args) {
-			let values = args
-			// if no args given
-			if (!args.length) {
-				// use array of zeroes
-				values = arrayOfZeroes(length)
-			}
-			this.values = values
-		}
-
-		toArray() {
-			return this.values
-		}
+    return class Vector {
+        static get length() {
+            return length
+        }
 
 
-		toString() {
-			return `Vector(${this.values.join(', ')})`
-		}
+        constructor(...args) {
+            let values = args
+            // if no args given
+            if (!args.length) {
+                // use array of zeroes
+                values = arrayOfZeroes(length)
+            }
+            this.values = values
+        }
+
+        toArray() {
+            return this.values
+        }
 
 
-		get length() {
-			return length
-		}
+        toString() {
+            return `Vector(${this.values.join(', ')})`
+        }
 
 
-		get values() {
-			return this._values
-		}
+        get length() {
+            return length
+        }
 
 
-		set values(newValues) {
-			if (newValues.length !== length) {
-				throw new Error(`expected ${length} args, got: ${newValues.length} args`)
-			}
-			if (newValues.filter(x => !Number.isFinite(x)).length) {
-				throw new Error(`expected array of finite numbers, got: ${newValues}`)
-			}
-			this._values = newValues
-		}
+        get values() {
+            return this._values
+        }
 
 
-		get mag() {
-			return Math.sqrt(this.magSq)
-		}
+        set values(newValues) {
+            if (newValues.length !== length) {
+                throw new Error(`expected ${length} args, got: ${newValues.length} args`)
+            }
+            if (newValues.filter(x => !Number.isFinite(x)).length) {
+                throw new Error(`expected array of finite numbers, got: ${newValues}`)
+            }
+            this._values = newValues
+        }
 
 
-		get magSq() {
-			return this.dot(this)
-		}
+        get mag() {
+            return Math.sqrt(this.magSq)
+        }
 
 
-		plus(other) {
-			if (!(other instanceof this.constructor)) {
-				throw new TypeError(`expected ${this.constructor.name} instance, got: ${other}`)
-			}
-
-			return new this.constructor(
-				...zip(this.values, other.values).map(pair => sum(pair))
-			)
-		}
+        get magSq() {
+            return this.dot(this)
+        }
 
 
-		minus(other) {
-			if (!(other instanceof this.constructor)) {
-				throw new TypeError(`expected ${this.constructor.name} instance, got: ${other}`)
-			}
+        plus(other) {
+            if (!(other instanceof this.constructor)) {
+                throw new TypeError(`expected ${this.constructor.name} instance, got: ${other}`)
+            }
 
-			return new this.constructor(
-				...zip(this.values, other.values.map(x => -x)).map(pair => sum(pair))
-			)
-		}
-
-
-		dot(other) {
-			return sum(zip(this.values, other.values).map(pair => product(pair)))
-		}
+            return new this.constructor(
+                ...zip(this.values, other.values).map(pair => sum(pair))
+            )
+        }
 
 
-		scale(scalar) {
-			if (!Number.isFinite(scalar)) {
-				throw new TypeError(`expected finite number, got: ${scalar}`)
-			}
+        minus(other) {
+            if (!(other instanceof this.constructor)) {
+                throw new TypeError(`expected ${this.constructor.name} instance, got: ${other}`)
+            }
 
-			return new this.constructor(
-				...this.values.map(x => x * scalar)
-			)
-		}
+            return new this.constructor(
+                ...zip(this.values, other.values.map(x => -x)).map(pair => sum(pair))
+            )
+        }
 
 
-		distanceFrom(other) {
-			return this.minus(other).mag
-		}
-	}
+        dot(other) {
+            return sum(zip(this.values, other.values).map(pair => product(pair)))
+        }
+
+
+        scale(scalar) {
+            if (!Number.isFinite(scalar)) {
+                throw new TypeError(`expected finite number, got: ${scalar}`)
+            }
+
+            return new this.constructor(
+                ...this.values.map(x => x * scalar)
+            )
+        }
+
+
+        distanceFrom(other) {
+            return this.minus(other).mag
+        }
+    }
 }
