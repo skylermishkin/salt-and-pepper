@@ -120,7 +120,7 @@ function initializeCanvas() {
 
 function initializeMenu() {
     // static structure
-    let menuHTML = 
+    let menuHTML =
         `<table>
             <tr>
                 <td><h2>Game Menu</h2></td>
@@ -148,7 +148,7 @@ function initializeMenu() {
     menu.style.width = SETTINGS['width'];
     document.body.insertBefore(menu, document.body.childNodes[0]);
     document.getElementById('levelSelect').max = SETTINGS['rows'] * SETTINGS['cols'] / 2;
-    
+
     setMenuListeners();
 }
 
@@ -166,7 +166,7 @@ function loadGame(level) {
     //confirm load
     if (confirm("To play, click on the board where you would like to start Pepper.")) {
         //kill listeners and delete old GAME
-        if (GAME != null) {
+        if (GAME !=== null) {
             GAME.quit();
             GAME = null;
         }
@@ -175,7 +175,7 @@ function loadGame(level) {
         levelSettings(level);
         defaultOptions();
         console.log("loading new game:", SETTINGS, OPTIONS);  //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-        
+
         initializeGame(CX, SETTINGS, OPTIONS);
     }
 }
@@ -185,7 +185,7 @@ function levelSettings(level) {  //BUG: set not actually composed of only unique
     SETTINGS['level'] = level;
     SETTINGS['threshold'] = level * 8;
     document.getElementById('threshold').innerHTML = SETTINGS['threshold'];
-    
+
     //simple random x,y generator according to level
     let randPoints = new Set();
     for (let i = 0; i < level; i++) {

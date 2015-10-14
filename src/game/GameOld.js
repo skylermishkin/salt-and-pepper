@@ -21,22 +21,22 @@ class Game {
 		this.animation = null;
 
 		this.completed = false;
-		this.board = new Board(cx, 
-			settings['boardWidth'], 
-			settings['boardHeight'], 
-			settings['rows'], 
-			settings['cols'], 
-			settings['saltMatrix'], 
+		this.board = new Board(cx,
+			settings['boardWidth'],
+			settings['boardHeight'],
+			settings['rows'],
+			settings['cols'],
+			settings['saltMatrix'],
 			settings['visibilityMatrix']);
-		this.salt = new Player(cx, 
+		this.salt = new Player(cx,
 			new Position(settings['boardWidth']/2, settings['boardHeight']/2),
 			0, 0,
-			settings['saltColor'], 
+			settings['saltColor'],
 			settings['playerRadius']);
-		this.pepper = new Player(cx, 
-			null, 
+		this.pepper = new Player(cx,
+			null,
 			0, 0,
-			settings['pepperColor'], 
+			settings['pepperColor'],
 			settings['playerRadius']);
 	}
 
@@ -78,7 +78,7 @@ class Game {
 		this.keys[e.keyCode] = false;
         console.log("keyup");  //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         // play/pause with space-bar
-        if (e.keyCode == 32) {
+        if (e.keyCode === 32) {
     		this.options['paused'] = !this.options['paused'];
     		if (this.options['paused']) {
     			this.pause();
@@ -97,8 +97,8 @@ class Game {
     	let offset = this.getOffset(document.querySelector('canvas'));
         this.clickCXPosition = new Position(xPos-offset['left'], yPos-offset['top']);
         //console.log("position captured:", this.clickCXPosition);  //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-        if (this.activeObject != null && this.activeObject.frozen == false) {
-        	if (this.activeObject == this.pepper) {
+        if (this.activeObject !== null && this.activeObject.frozen === false) {
+        	if (this.activeObject === this.pepper) {
         		this.settings['moves'] += 1;
         		document.getElementById('moves').innerHTML = this.settings['moves'];
         	}
@@ -125,13 +125,13 @@ class Game {
 		// set pepper
 		this.clickCXPosition = null;
 		this.activeObject = this.pepper;
-        
+
         let wait = window.setTimeout(this.playIfSet.bind(this), 200);
 	}
 
 
     playIfSet() {
-        if (this.pepper.position != null) {
+        if (this.pepper.position !== null) {
             this.play();
         } else {
             let wait = window.setTimeout(this.playIfSet.bind(this), 200);
@@ -140,7 +140,7 @@ class Game {
 
 
 	play() {
-		if (this.pepper.position != null) {  // nothing to animate if pepper not on board
+		if (this.pepper.position !== null) {  // nothing to animate if pepper not on board
 			console.log("salt start:", this.salt.position);  //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 			console.log("pepper start:", this.pepper.position);  //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 			this.animation = window.requestAnimationFrame(this.render.bind(this));
@@ -190,7 +190,7 @@ class Game {
 	moveSalt() {
         // screen sizing scalar
         let scalar = this.settings['boardHeight'];
-		
+
         // givens
         let g = this.settings['gravity'] * scalar*scalar*scalar; //scaled
         let t = this.settings['frameDuration'] / 1000;  // in seconds
@@ -235,7 +235,7 @@ class Game {
 
 	collectSalt() {
         let zone = this.board.getCellByCoordinates(this.salt.position.x, this.salt.position.y);
-        if (zone != null && zone.salt > 0) {
+        if (zone !== null && zone.salt > 0) {
             // increment score
             this.settings['score'] += 1;
             // lower salt

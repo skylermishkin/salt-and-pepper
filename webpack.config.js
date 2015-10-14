@@ -32,8 +32,14 @@ module.exports = {
                 loader: 'babel',
                 include: path.join(__dirname, 'src'),
                 query: {stage: 0},
+            }, {
+                test: /\.css$/,
+                loaders: ['style', 'css'],
             },
         ],
+    },
+    resolve: {
+        root: path.join(__dirname, 'src'),
     },
     plugins: plugins,
     devtool: devtool,

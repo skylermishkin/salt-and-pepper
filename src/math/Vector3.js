@@ -41,18 +41,18 @@ export default class Vector3 extends createVectorClass(3) {
 	}
 
 
-	get y() {
+	get z() {
 		return this.values[2]
 	}
 
 
-	set y(y) {
-		if (!Number.isFinite(y)) {
-			throw new TypeError(`expected finite number, got: ${y}`)
+	set z(z) {
+		if (!Number.isFinite(z)) {
+			throw new TypeError(`expected finite number, got: ${z}`)
 		}
 
 		const newValues = this.values
-		newValues[2] = y
+		newValues[2] = z
 
 		this.values = newValues
 	}

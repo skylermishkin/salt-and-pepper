@@ -12,7 +12,7 @@ import env from 'gulp-env'
  * Build entry point.
  */
 gulp.task('build', ['clean'], () => {
-    return gulp.src(path.join(__dirname, "src", "main.js"))
+    return gulp.src(path.join(__dirname, "src", "index.js"))
                .pipe(named())
                .pipe(webpack(require(path.join(__dirname, "webpack.config.js"))))
                .pipe(gulp.dest(path.join(__dirname, "build")))
@@ -28,7 +28,7 @@ gulp.task('watch', ['clean'], () => {
         watch: true,
     }
 
-    return gulp.src(path.join(__dirname, "src", "main.js"))
+    return gulp.src(path.join(__dirname, "src", "index.js"))
                .pipe(named())
                .pipe(webpack(config))
                .pipe(gulp.dest(path.join(__dirname, "build")))
@@ -46,7 +46,7 @@ gulp.task('build-production', ['clean'], () => {
         },
     })
     // build the client
-    return gulp.src(path.join(__dirname, "src", "main.js"))
+    return gulp.src(path.join(__dirname, "src", "index.js"))
                .pipe(named())
                .pipe(webpack(require(path.join(__dirname, "webpack.config.js"))))
                .pipe(gulp.dest(path.join(__dirname, "build")))

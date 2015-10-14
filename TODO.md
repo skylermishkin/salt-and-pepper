@@ -1,0 +1,3 @@
+- erase Beacon.js.  A beacon is just a `{position, color}` hash
+- dry up standard get set setup. `addProp(this, 'color', validator)`
+- use promises instead of callbacks

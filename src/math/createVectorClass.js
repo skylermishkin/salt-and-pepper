@@ -5,6 +5,15 @@ import product from 'math/product'
 import zip from 'lodash/array/zip'
 
 
+function arrayOfZeroes(length) {
+	const list = []
+	for (var i = 0; i < length; i++) {
+		list.push(0)
+	}
+	return list
+}
+
+
 /**
  * Factory for creating vector classes.
  * @arg {number} length - The dimension (number of entries) for the vector to have.
@@ -22,7 +31,13 @@ export default (length) => {
 
 
 		constructor(...args) {
-			this.values = args
+			let values = args
+			// if no args given
+			if (!args.length) {
+				// use array of zeroes
+				values = arrayOfZeroes(length)
+			}
+			this.values = values
 		}
 
 		toArray() {

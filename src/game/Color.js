@@ -7,15 +7,6 @@ import Vector3 from 'math/Vector3'
  * @class
  */
 export default class Color extends Vector3 {
-	// static fromVector3(vector) {
-	// 	if (!(vector instanceof Vector3)) {
-	// 		throw new TypeError(`expected Vector3 instance, got: ${vector}`)
-	// 	}
-	//
-	// 	return new this(...vector.toArray())
-	// }
-
-
 	constructor(...args) {
 		let r, g, b, a
 		// if no arguments passed
@@ -161,7 +152,7 @@ export default class Color extends Vector3 {
 	}
 
 
-	complement() {
+	get complement() {
 		return new this.constructor(...this.values.map(x => 255 - x), this.a)
 	}
 }

@@ -1,26 +1,32 @@
-import Cell from "./Cell.js"
-import Color from "./Color.js"
+// local imports
+import Cell from './Cell'
+import Color from './Color'
 
+
+/**
+ * Game board.
+ * @class
+ */
 class Board {
-	constructor(cx, width, height, rows, cols, saltMatrix, visibilityMatrix) {
-		this.cx = cx;
-		this.width = width;
-		this.height = height;
+	constructor(width, height, rows, cols, saltMatrix, visibilityMatrix) {
+		this.width = width
+		this.height = height
 
-		this.rows = rows;
-		this.cols = cols;
+		this.rows = rows
+		this.cols = cols
 
-		//matrix = [[cell, cell, ...], [cell, cell, ...], ...];
-		this.matrix = [];
+		//matrix = [[cell, cell, ...], [cell, cell, ...], ...]
+		this.matrix = []
 		for (var numRow = 0; numRow < rows; numRow++) {
-			var row = [];
+			var row = []
 			for (var numCol = 0; numCol < cols; numCol++) {
-				row.push(new Cell(saltMatrix[numRow][numCol], visibilityMatrix[numRow][numCol]));
+				row.push(new Cell(saltMatrix[numRow][numCol], visibilityMatrix[numRow][numCol]))
 			}
-			this.matrix.push(row);
+			this.matrix.push(row)
 		}
 	}
-	
+
+
 	getCell(row, col) {return this.matrix[row-1][col-1];}
 	setCell(row, col, newCell) {this.matrix[row-1][col-1] = newCell;}
 
@@ -76,8 +82,9 @@ class Board {
 		}
 	}
 
-	paint() {  // does not include visibility
-		this.cx.save();
+
+	paint(context) {  // does not include visibility
+		context.save();
 
 	    let cellWidth = this.width / this.cols;
 	    let cellHeight = this.height / this.rows;
@@ -87,17 +94,17 @@ class Board {
 	    		let cVal = this.getCell(row, col).salt * 32; // 8-bit salting
 	    		let cellColor = new Color(cVal);
 
-	            this.cx.lineWidth = "1";
-	            this.cx.strokeStyle = cellColor.css();
-	            this.cx.fillStyle = cellColor.css();
-	            this.cx.beginPath();
-	            this.cx.rect(cellHeight * (col-1), cellWidth * (row-1), cellWidth, cellHeight);
-	            this.cx.fill();
-	            this.cx.stroke();
+	            context.lineWidth = "1";
+	            context.strokeStyle = cellColor.css();
+	            context.fillStyle = cellColor.css();
+	            context.beginPath();
+	            context.rect(cellHeight * (col-1), cellWidth * (row-1), cellWidth, cellHeight);
+	            context.fill();
+	            context.stroke();
 	        }
 	    }
-	    
-	    this.cx.restore();
+
+	    context.restore();
 	}
 };
 
