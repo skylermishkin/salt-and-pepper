@@ -33,7 +33,10 @@ module.exports = {
             {
                 test: /\.js$/,
                 loader: 'babel',
-                include: projectPaths.sourceDir,
+                include: [
+                    projectPaths.sourceDir,
+                    projectPaths.testsDir,
+                ],
                 query: {
                     optional: ['runtime'],
                     stage: 0,

@@ -4,11 +4,13 @@ import del from 'del'
 import webpack from 'webpack-stream'
 import named from 'vinyl-named'
 import env from 'gulp-env'
+import karma from 'karma'
 // local imports
 import {
     buildDir,
     entry,
     webpackConfig as webpackConfigPath,
+    karmaConfig as karmaConfigPath,
 } from './config/projectPaths'
 const webpackConfig = require(webpackConfigPath)
 
@@ -63,6 +65,31 @@ gulp.task('build-production', ['clean'], () => {
  */
 gulp.task('clean', () => {
     del.sync(buildDir)
+})
+
+
+/**
+ * Run the test suite once.
+ */
+gulp.task('test', (cb) => {
+    const server = new karma.Server({
+        configFile: karmaConfigPath,
+        singleRun: true
+    }, () => cb())
+
+    server.start()
+})
+
+
+/**
+ * Watch source and tests for changes, run tests on change.
+ */
+gulp.task('tdd', () => {
+    const server = new karma.Server({
+        configFile: karmaConfigPath,
+    })
+
+    server.start()
 })
 
 

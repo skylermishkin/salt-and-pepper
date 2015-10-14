@@ -15,6 +15,8 @@ var sourceDir = path.join(rootDir, 'src')
 var buildDir = path.join(rootDir, 'build')
 // configuration directory
 var configDir = path.join(rootDir, 'config')
+// tests directory
+var testsDir = path.join(rootDir, 'tests')
 
 
 // export the project paths|globs object
@@ -24,8 +26,11 @@ module.exports = {
     sourceDir: sourceDir,
     buildDir: buildDir,
     configDir: configDir,
+    testsDir: testsDir,
     // entry points
     entry: path.join(sourceDir, 'index.js'),
+    // globs
+    testsGlob: path.join(testsDir, 'test_*.js'),
     // configuration files
     eslintConfig: path.join(configDir, 'eslint.json'),
     karmaConfig: path.join(configDir, 'karma.js'),
