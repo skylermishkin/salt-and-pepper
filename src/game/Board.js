@@ -15,6 +15,7 @@ export default class Board {
 
         this._rows = rows
         this._cols = cols
+        this.special = [0, 0]
 
         // initialize `this._matrix`
         this.clear()
@@ -51,9 +52,10 @@ export default class Board {
 
 
     leech(position) {
-        const i = Math.round((this._rows - 1) * position.y / 100)
-        const j = Math.round((this._cols - 1) * position.x / 100)
+        const i = Math.floor((this._rows - 1) * position.y / 100)
+        const j = Math.floor((this._cols - 1) * position.x / 100)
 
+        this.special = [i, j]
         if (i < 0 || i >= this._rows || j < 0 || j >= this._cols) {
             return 0
         }
@@ -80,6 +82,9 @@ export default class Board {
         const paddingX = Math.floor(mod(width, this._cols) / 2)
         const paddingY = Math.floor(mod(height, this._rows) / 2)
 
+        context.fillStyle = 'black'
+        context.fillRect(0, 0, width, height)
+
         for (var i = 0; i < this._rows; i++) {
             for (var j = 0; j < this._cols; j++) {
                 const cell = this._matrix[i][j]
@@ -90,6 +95,9 @@ export default class Board {
 
                 context.lineWidth = 10
                 context.fillStyle = color.toString()
+                if (this.special[0] === i && this.special[1] === j) {
+                    context.fillStyle = 'red'
+                }
                 // fill the cell
                 context.fillRect(x, y, cellWidth, cellHeight)
             }

@@ -3,12 +3,11 @@ import React, {Component} from 'react'
 import throttle from 'lodash/function/throttle'
 // local imports
 import styles from './styles'
-import StatsBar from 'components/StatsBar'
-import LevelSelector from 'components/LevelSelector'
+import Menu from 'components/Menu'
 import Player from 'game/Player'
 import Board from 'game/Board'
-import Vector2 from 'math/Vector2'
 import Color from 'game/Color'
+import Vector2 from 'math/Vector2'
 
 
 // global time step
@@ -22,25 +21,6 @@ export default class Root extends Component {
 
         const initialLevel = 1
 
-        const board = new Board({
-            rows: 10,
-            cols: 10,
-        })
-        board.sprinkle(initialLevel)
-
-        const salt = new Player({
-            position: new Vector2(50, 50),
-            velocity: new Vector2(),
-            color: new Color(200, 4, 1),
-            radius: 10,
-        })
-        const pepper = new Player({
-            position: new Vector2(50, 50),
-            velocity: new Vector2(),
-            color: new Color(100, 200, 3),
-            radius: 20,
-        })
-
         // set initial state
         this.state = {
             // canvas dimensions
@@ -51,13 +31,26 @@ export default class Root extends Component {
             score: 0,
             moves: 0,
             isPaused: true,
-            board: board,
-            salt: salt,
-            pepper: pepper,
+            board: new Board({
+                rows: 30,
+                cols: 30,
+            }).sprinkle(initialLevel),
+            salt: new Player({
+                position: new Vector2(50, 50),
+                velocity: new Vector2(),
+                color: new Color(200, 4, 1),
+                radius: 10,
+            }),
+            pepper: new Player({
+                position: new Vector2(50, 50),
+                velocity: new Vector2(),
+                color: new Color(100, 200, 3),
+                radius: 20,
+            }),
         }
         // throttle so that we dont spam resize event
         this.onResize = throttle(
-            // bind instance method so it can be passed as window event handler
+            // bind instance method so it can be passed as window resize handler
             // pass draw as callback so always redraw after resize
             this.onResize.bind(this, this.draw.bind(this)),
             100
@@ -113,7 +106,13 @@ export default class Root extends Component {
         const saltToPepper = pepper.position.minus(salt.position)
         const saltToPepperMagCubed = saltToPepper.magSq * saltToPepper.mag
 
-        const acceleration = saltToPepper.scale(100 / saltToPepperMagCubed)
+        let scalar = 100 / saltToPepperMagCubed
+
+        if (!(scalar < 500)) {
+            scalar = 500
+        }
+
+        const acceleration = saltToPepper.scale(scalar)
         salt.velocity = salt.velocity.plus(acceleration.scale(dt))
         salt.position = salt.position.plus(salt.velocity.scale(dt))
 
@@ -168,7 +167,7 @@ export default class Root extends Component {
         // clear and resprinkle board
         this.state.board.clear().sprinkle(level)
         // recenter salt, then...
-        this.centerSalt(() => {
+        this.centerPlayers(() => {
             // draw new setup
             this.draw()
             // update internal state
@@ -181,9 +180,13 @@ export default class Root extends Component {
     }
 
 
-    centerSalt(cb) {
+    centerPlayers(cb) {
         // center salt character
         this.state.salt.position = new Vector2(50, 50)
+        // reset salt velocity
+        this.state.salt.velocity = new Vector2()
+        // center pepper character
+        this.state.pepper.position = new Vector2(50, 50)
         // force update since state mutation above is implicit
         this.forceUpdate(cb)
     }
@@ -199,26 +202,20 @@ export default class Root extends Component {
 
 
     render() {
-        console.log('game state: ', this.state)
+        const {level, score, moves} = this.state
 
         return (
             <div style={styles.container}>
-                <div style={styles.menu}>
-                    <LevelSelector
-                        value={this.state.level}
-                        onChange={
-                            ({target}) => this.setLevel(parseInt(target.value, 10))
-                        }
-                    />
-                    <StatsBar
-                        toWin={this.state.level * 10 || 'N/A'}
-                        score={this.state.score}
-                        moves={this.state.moves}
-                    />
-                </div>
+                <Menu
+                    level={level}
+                    onLevelChange={
+                        ({target}) => this.setLevel(parseInt(target.value, 10))
+                    }
+                    score={score}
+                    moves={moves}
+                />
                 <div style={styles.content}>
                     <canvas
-                        tabIndex='0'
                         ref='canvas'
                         style={styles.canvas}
                         onClick={
