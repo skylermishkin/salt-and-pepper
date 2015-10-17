@@ -10,6 +10,7 @@ import ColorMatrix from 'game/ColorMatrix'
 import Player from 'game/Player'
 import Color from 'game/Color'
 import Vector2 from 'math/Vector2'
+import mod from 'math/mod'
 
 
 // global time step
@@ -66,8 +67,8 @@ export default class Root extends Component {
     loopAnimation() {
         const {salt, pepper, colorMatrix, isPaused} = this.state
 
-        const saltI = Math.floor(salt.position.y / cellHeight)
-        const saltJ = Math.floor(salt.position.x / cellWidth)
+        const saltI = mod(Math.floor(salt.position.y / cellHeight), gameRows)
+        const saltJ = mod(Math.floor(salt.position.x / cellWidth), gameCols)
 
         // the amount of dust leeched from the colorMatrix by salt
         const leeched = colorMatrix.leech(saltI, saltJ)
@@ -82,7 +83,6 @@ export default class Root extends Component {
         const acceleration = saltToPepper.scale(scalar)
         salt.velocity = salt.velocity.plus(acceleration.scale(dt))
         salt.position = salt.position.plus(salt.velocity.scale(dt))
-            .mod(gameVector)
 
         // trigger update by updating score based on leech
         this.setState({score: this.state.score + leeched})
