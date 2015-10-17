@@ -98,25 +98,30 @@ export default class Root extends Component {
 
 
     handleSVGClick({pageX, pageY, currentTarget}) {
+        const {pepper, isPaused, moves} = this.state
+
         // mouse coordinates relative to canvas DOM node
         const x = pageX - currentTarget.offsetLeft
         const y = pageY - currentTarget.offsetTop
 
         // move pepper to mouse position
         // implicit state mutation ok since state will be updated just below
-        this.state.pepper.position = new Vector2(
+        const clickPosition = new Vector2(
             // TODO: don't use `window` like a fool
             gameWidth * x / window.innerWidth,
             gameWidth * y / window.innerWidth,
         )
 
+        pepper.velocity = pepper.velocity
+            .plus(clickPosition.minus(pepper.position).scale(0.1))
+
         // to reference later in callback
-        const wasPaused = this.state.isPaused
+        const wasPaused = isPaused
 
         // update number of moves and make sure animation is not paused, then...
         this.setState(
             {
-                moves: this.state.moves + 1,
+                moves: moves + 1,
                 isPaused: false,
             },
             () => {
