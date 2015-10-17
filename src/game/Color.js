@@ -2,6 +2,20 @@
 import Vector3 from 'math/Vector3'
 
 
+function trim(x) {
+    if (!Number.isFinite(x)) {
+        throw new Error(`expected finite number, got: ${x}`)
+    }
+    if (x > 255) {
+        return 255
+    }
+    if (x < 0) {
+        return 0
+    }
+    return x
+}
+
+
 /**
  * An rgb color.
  * @class
@@ -50,12 +64,12 @@ export default class Color extends Vector3 {
         }
 
         super(r, g, b)
-        this.a = a
-    }
 
+        if (a < 0 || a > 1) {
+            throw new Error('expected number in [0, 1], got: ${a}')
+        }
 
-    clone() {
-        return new this.constructor(this.r, this.g, this.b, this.a)
+        this._a = a
     }
 
 
@@ -64,50 +78,18 @@ export default class Color extends Vector3 {
     }
 
 
-    toVector3() {
-        return new Vector3(...this.toArray())
-    }
-
-
     get r() {
-        return this.x
-    }
-
-
-    set r(r) {
-        if (!(r >= 0 && r < 256 && r === Math.floor(r))) {
-            throw new TypeError(`expected integer in [0, 256), got: ${r}`)
-        }
-
-        this.x = r
+        return this._values[0]
     }
 
 
     get g() {
-        return this.y
-    }
-
-
-    set g(g) {
-        if (!(g >= 0 && g < 256 && g === Math.floor(g))) {
-            throw new TypeError(`expected integer in [0, 256), got: ${g}`)
-        }
-
-        this.y = g
+        return this._values[1]
     }
 
 
     get b() {
-        return this.z
-    }
-
-
-    set b(b) {
-        if (!(b >= 0 && b < 256 && b === Math.floor(b))) {
-            throw new TypeError(`expected integer in [0, 256), got: ${b}`)
-        }
-
-        this.z = b
+        return this._values[2]
     }
 
 
@@ -116,48 +98,23 @@ export default class Color extends Vector3 {
     }
 
 
-    set a(a) {
-        if (!(a >= 0 && a <= 1)) {
-            throw new TypeError(`expected number in [0, 1], got: ${a}`)
-        }
-
-        this._a = a
+    get complement() {
+        return new this.constructor(...this.values.map(x => 255 - x), this._a)
     }
 
 
     plus(other) {
         return new this.constructor(
-            ...super.plus(other).values.map(x => {
-                if (x > 255) {
-                    return 255
-                }
-                if (x < 0) {
-                    return 0
-                }
-                return x
-            }),
-            this.a
+            ...super.plus(other).values.map(trim),
+            this._a
         )
     }
 
 
     minus(other) {
         return new this.constructor(
-            ...super.minus(other).values.map(x => {
-                if (x > 255) {
-                    return 255
-                }
-                if (x < 0) {
-                    return 0
-                }
-                return x
-            }),
-            this.a
+            ...super.minus(other).values.map(trim),
+            this._a
         )
-    }
-
-
-    get complement() {
-        return new this.constructor(...this.values.map(x => 255 - x), this.a)
     }
 }

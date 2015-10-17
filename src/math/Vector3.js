@@ -8,52 +8,28 @@ import createVectorClass from './createVectorClass'
  */
 export default class Vector3 extends createVectorClass(3) {
     get x() {
-        return this.values[0]
-    }
-
-
-    set x(x) {
-        if (!Number.isFinite(x)) {
-            throw new TypeError(`expected finite number, got: ${x}`)
-        }
-
-        const newValues = this.values
-        newValues[0] = x
-
-        this.values = newValues
+        return this._values[0]
     }
 
 
     get y() {
-        return this.values[1]
-    }
-
-
-    set y(y) {
-        if (!Number.isFinite(y)) {
-            throw new TypeError(`expected finite number, got: ${y}`)
-        }
-
-        const newValues = this.values
-        newValues[1] = y
-
-        this.values = newValues
+        return this._values[1]
     }
 
 
     get z() {
-        return this.values[2]
+        return this._values[2]
     }
 
 
-    set z(z) {
-        if (!Number.isFinite(z)) {
-            throw new TypeError(`expected finite number, got: ${z}`)
-        }
-
-        const newValues = this.values
-        newValues[2] = z
-
-        this.values = newValues
-    }
+    // rotated(other, angle) {
+    //     if (!(other instanceof this.constructor)) {
+    //         throw new TypeError(`expected ${this.constructor.name} instance, got: ${other}`)
+    //     }
+    //     if (!Number.isFinite(angle)) {
+    //         throw new TypeError(`expected finite number, got: ${angle}`)
+    //     }
+    //
+    //     // TODO: write this
+    // }
 }

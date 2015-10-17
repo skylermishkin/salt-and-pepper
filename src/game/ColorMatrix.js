@@ -45,7 +45,7 @@ export default class ColorMatrix {
         for (var i = 0; i < this._rows; i++) {
             const row = []
             for (var j = 0; j < this._cols; j++) {
-                row.push(color.clone())
+                row.push(color)
             }
             this._matrix.push(row)
         }
@@ -80,7 +80,7 @@ export default class ColorMatrix {
             )
         }
 
-        return this._matrix[i][j].clone()
+        return this._matrix[i][j]
     }
 
 

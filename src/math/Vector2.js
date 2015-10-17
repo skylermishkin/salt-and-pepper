@@ -8,35 +8,25 @@ import createVectorClass from './createVectorClass'
  */
 export default class Vector2 extends createVectorClass(2) {
     get x() {
-        return this.values[0]
-    }
-
-
-    set x(x) {
-        if (!Number.isFinite(x)) {
-            throw new TypeError(`expected finite number, got: ${x}`)
-        }
-
-        const newValues = this.values
-        newValues[0] = x
-
-        this.values = newValues
+        return this._values[0]
     }
 
 
     get y() {
-        return this.values[1]
+        return this._values[1]
     }
 
 
-    set y(y) {
-        if (!Number.isFinite(y)) {
-            throw new TypeError(`expected finite number, got: ${y}`)
+    rotated(angle) {
+        if (!Number.isFinite(angle)) {
+            throw new TypeError(`expected finite number, got: ${angle}`)
         }
 
-        const newValues = this.values
-        newValues[1] = y
+        const x = this.x
+        const y = this.y
+        const cos = Math.cos(angle)
+        const sin = Math.sin(angle)
 
-        this.values = newValues
+        return new this.constructor((x * cos) - (y * sin), (x * sin) + (y * cos))
     }
 }

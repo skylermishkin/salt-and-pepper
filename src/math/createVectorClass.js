@@ -38,11 +38,13 @@ export default (length) => {
                 // use array of zeroes
                 values = arrayOfZeroes(length)
             }
-            this.values = values
-        }
-
-        toArray() {
-            return this.values
+            if (values.length !== length) {
+                throw new Error(`expected ${length} args, got: ${values.length} args`)
+            }
+            if (values.filter(x => !Number.isFinite(x)).length) {
+                throw new Error(`expected array of finite numbers, got: ${values}`)
+            }
+            this._values = values
         }
 
 
@@ -58,17 +60,6 @@ export default (length) => {
 
         get values() {
             return this._values
-        }
-
-
-        set values(newValues) {
-            if (newValues.length !== length) {
-                throw new Error(`expected ${length} args, got: ${newValues.length} args`)
-            }
-            if (newValues.filter(x => !Number.isFinite(x)).length) {
-                throw new Error(`expected array of finite numbers, got: ${newValues}`)
-            }
-            this._values = newValues
         }
 
 
@@ -117,11 +108,6 @@ export default (length) => {
             return new this.constructor(
                 ...this.values.map(x => x * scalar)
             )
-        }
-
-
-        distanceFrom(other) {
-            return this.minus(other).mag
         }
 
 

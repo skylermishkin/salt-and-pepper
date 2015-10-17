@@ -7,7 +7,7 @@ import SVG from 'components/SVG'
 import ColorMatrixComponent from 'components/ColorMatrix'
 import PlayerComponent from 'components/Player'
 import ColorMatrix from 'game/ColorMatrix'
-import PlayerClass from 'game/Player'
+import Player from 'game/Player'
 import Color from 'game/Color'
 import Vector2 from 'math/Vector2'
 
@@ -22,6 +22,9 @@ const gameRows = gameHeight / 100
 const gameCols = gameWidth / 100
 const cellWidth = gameWidth / gameCols
 const cellHeight = gameHeight / gameRows
+const centerVector = new Vector2(gameWidth / 2, gameHeight / 2)
+const zeroVector = new Vector2()
+const gameVector = new Vector2(gameWidth, gameHeight)
 
 
 export default class Root extends Component {
@@ -38,15 +41,15 @@ export default class Root extends Component {
                 rows: gameRows,
                 cols: gameCols,
             }).sprinkle(initialLevel),
-            salt: new PlayerClass({
-                position: new Vector2(gameWidth / 2, gameHeight / 2),
-                velocity: new Vector2(),
+            salt: new Player({
+                position: centerVector,
+                velocity: zeroVector,
                 color: new Color(200, 140, 110),
                 mass: 15,
             }),
-            pepper: new PlayerClass({
-                position: new Vector2(gameWidth / 2, gameHeight / 2),
-                velocity: new Vector2(),
+            pepper: new Player({
+                position: centerVector,
+                velocity: zeroVector,
                 color: new Color(140, 200, 133),
                 mass: 35,
             }),
@@ -79,7 +82,7 @@ export default class Root extends Component {
         const acceleration = saltToPepper.scale(scalar)
         salt.velocity = salt.velocity.plus(acceleration.scale(dt))
         salt.position = salt.position.plus(salt.velocity.scale(dt))
-            .mod(new Vector2(gameWidth, gameHeight))
+            .mod(gameVector)
 
         // trigger update by updating score based on leech
         this.setState({score: this.state.score + leeched})
@@ -130,13 +133,13 @@ export default class Root extends Component {
         // clear and resprinkle colorMatrix
         this.state.colorMatrix.clear().sprinkle(level)
         // center salt character
-        this.state.salt.position = new Vector2(gameWidth / 2, gameHeight / 2)
+        this.state.salt.position = centerVector
         // reset salt velocity
-        this.state.salt.velocity = new Vector2()
+        this.state.salt.velocity = zeroVector
         // center pepper character
-        this.state.pepper.position = new Vector2(gameWidth / 2, gameHeight / 2)
+        this.state.pepper.position = centerVector
         // reset pepper velocity
-        this.state.pepper.velocity = new Vector2()
+        this.state.pepper.velocity = zeroVector
         // trigger update to state by setting...
         this.setState({
             // new level number
