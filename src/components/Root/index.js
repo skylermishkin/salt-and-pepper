@@ -25,7 +25,6 @@ const cellWidth = gameWidth / gameCols
 const cellHeight = gameHeight / gameRows
 const centerVector = new Vector2(gameWidth / 2, gameHeight / 2)
 const zeroVector = new Vector2()
-const gameVector = new Vector2(gameWidth, gameHeight)
 
 
 export default class Root extends Component {
@@ -83,6 +82,8 @@ export default class Root extends Component {
         const acceleration = saltToPepper.scale(scalar)
         salt.velocity = salt.velocity.plus(acceleration.scale(dt))
         salt.position = salt.position.plus(salt.velocity.scale(dt))
+        pepper.velocity = pepper.velocity.plus(acceleration.scale(-dt))
+        pepper.position = pepper.position.plus(pepper.velocity.scale(dt))
 
         // trigger update by updating score based on leech
         this.setState({score: this.state.score + leeched})
