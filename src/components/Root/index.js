@@ -25,7 +25,6 @@ const cellWidth = gameWidth / gameCols
 const cellHeight = gameHeight / gameRows
 const centerVector = new Vector2(gameWidth / 2, gameHeight / 2)
 const zeroVector = new Vector2()
-const gameVector = new Vector2(gameWidth, gameHeight)
 
 
 export default class Root extends Component {
@@ -54,6 +53,7 @@ export default class Root extends Component {
                 color: new Color(140, 200, 133),
                 mass: 35,
             }),
+            waypoint: zeroVector,
         }
     }
 
@@ -65,7 +65,7 @@ export default class Root extends Component {
 
 
     loopAnimation() {
-        const {salt, pepper, colorMatrix, isPaused} = this.state
+        const {salt, pepper, waypoint, colorMatrix, isPaused} = this.state
 
         const saltI = mod(Math.floor(salt.position.y / cellHeight), gameRows)
         const saltJ = mod(Math.floor(salt.position.x / cellWidth), gameCols)
@@ -83,6 +83,17 @@ export default class Root extends Component {
         const acceleration = saltToPepper.scale(scalar)
         salt.velocity = salt.velocity.plus(acceleration.scale(dt))
         salt.position = salt.position.plus(salt.velocity.scale(dt))
+
+
+        const pepperToWaypoint = waypoint.minus(pepper.position)
+
+        let pepperVelocity = zeroVector
+        if (pepperToWaypoint.magSq > 50) {
+            pepperVelocity = pepperToWaypoint.unit.scale(100)
+        }
+
+        pepper.velocity = pepperVelocity
+        pepper.position = pepper.position.plus(pepper.velocity.scale(dt))
 
         // trigger update by updating score based on leech
         this.setState({score: this.state.score + leeched})
@@ -103,7 +114,7 @@ export default class Root extends Component {
 
         // move pepper to mouse position
         // implicit state mutation ok since state will be updated just below
-        this.state.pepper.position = new Vector2(
+        this.state.waypoint = new Vector2(
             // TODO: don't use `window` like a fool
             gameWidth * x / window.innerWidth,
             gameWidth * y / window.innerWidth,

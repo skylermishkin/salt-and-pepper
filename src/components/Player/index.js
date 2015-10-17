@@ -42,6 +42,7 @@ export default class Player extends Component {
                     cy={y}
                     fill={color.toString()}
                     stroke={color.complement.toString()}
+                    strokeWidth={5}
                 />
             </G>
         )

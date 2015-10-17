@@ -73,6 +73,15 @@ export default (length) => {
         }
 
 
+        get unit() {
+            const mag = this.mag
+            if (mag === 0) {
+                return new Vector()
+            }
+            return this.scale(1 / mag)
+        }
+
+
         plus(other) {
             if (!(other instanceof this.constructor)) {
                 throw new TypeError(`expected ${this.constructor.name} instance, got: ${other}`)
