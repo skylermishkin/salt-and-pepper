@@ -1,8 +1,9 @@
-// local imports
-import sum from 'math/sum'
-import product from 'math/product'
 // third party imports
 import zip from 'lodash/array/zip'
+// local imports
+import mod from 'math/mod'
+import sum from 'math/sum'
+import product from 'math/product'
 
 
 function arrayOfZeroes(length) {
@@ -121,6 +122,13 @@ export default (length) => {
 
         distanceFrom(other) {
             return this.minus(other).mag
+        }
+
+
+        mod(other) {
+            return new this.constructor(
+                ...zip(this.values, other.values).map(pair => mod(pair[0], pair[1]))
+            )
         }
     }
 }

@@ -3,18 +3,17 @@ export default {
         display: 'flex',
         flexDirection: 'column',
         minHeight: '100%',
+        backgroundColor: '#dafbae',
     },
-    menu: {
-        backgroundColor: '#edeef1',
-    },
-    content: {
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-        flexGrow: 1,
-    },
-    canvas: {
-        height: '100%',
-        width: '100%',
+    // svgContainer: {
+    //     display: 'flex',
+    //     justifyContent: 'center',
+    //     alignItems: 'center',
+    //     flexGrow: 1,
+    // },
+    svg: {
+        backgroundColor: 'black',
+        // height: '100%',
+        // width: '100%',
     },
 }

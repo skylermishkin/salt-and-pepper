@@ -1,39 +1,43 @@
+// local imports
+import Vector2 from 'math/Vector2'
+import Color from 'game/Color'
+
+
 /**
  * Player character.
  * @class
  */
 export default class Player {
-    constructor({position, velocity, color, radius, isFrozen = false}) {
+    constructor({position, velocity, color, mass}) {
+        if (!(position instanceof Vector2)) {
+            throw new Error(`expected vector2 instance, got: ${position}`)
+        }
+        if (!(velocity instanceof Vector2)) {
+            throw new Error(`expected vector2 instance, got: ${velocity}`)
+        }
+        if (!(color instanceof Color)) {
+            throw new Error(`expected color instance, got: ${color}`)
+        }
+        if (!Number.isFinite(mass)) {
+            throw new Error(`expected finite integer, got: ${mass}`)
+        }
+
         this.position = position
         this.velocity = velocity
         this.color = color
-        this.radius = radius
-        this.isFrozen = isFrozen
+        this.mass = mass
     }
 
 
-    move(vector) {
-        this.position = this.position.plus(vector)
+    /**
+     * Shifts the player's position by the given displacement.
+     */
+    move(displacement) {
+        if (!(displacement instanceof Vector2)) {
+            throw new Error(`expected vector2 instance, got: ${displacement}`)
+        }
 
-        return this
-    }
-
-
-    draw(context) {
-        // dimensions of the entire canvas
-        const width = context.canvas.width
-        const height = context.canvas.height
-        // player position in canvas dimension units
-        const x = width * this.position.x / 100
-        const y = height * this.position.y / 100
-
-        context.lineWidth = 3
-        context.strokeStyle = this.color.complement.toString()
-        context.fillStyle = this.color.toString()
-        context.beginPath()
-        context.arc(x, y, this.radius, 0, 2 * Math.PI)
-        context.fill()
-        context.stroke()
+        this.position = this.position.plus(displacement)
 
         return this
     }

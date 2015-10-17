@@ -54,6 +54,11 @@ export default class Color extends Vector3 {
     }
 
 
+    clone() {
+        return new this.constructor(this.r, this.g, this.b, this.a)
+    }
+
+
     toString() {
         return `rgba(${this.r}, ${this.g}, ${this.b}, ${this.a})`
     }

@@ -1,113 +1,77 @@
 // third party imports
 import React, {Component} from 'react'
-import throttle from 'lodash/function/throttle'
 // local imports
 import styles from './styles'
 import Menu from 'components/Menu'
-import Player from 'game/Player'
-import Board from 'game/Board'
+import SVG from 'components/SVG'
+import ColorMatrixComponent from 'components/ColorMatrix'
+import PlayerComponent from 'components/Player'
+import ColorMatrix from 'game/ColorMatrix'
+import PlayerClass from 'game/Player'
 import Color from 'game/Color'
 import Vector2 from 'math/Vector2'
 
 
 // global time step
-const dt = 0.1
+const dt = 0.07
+// level to start out on
+const initialLevel = 100
+const gameHeight = 900
+const gameWidth = 1600
+const gameRows = gameHeight / 100
+const gameCols = gameWidth / 100
+const cellWidth = gameWidth / gameCols
+const cellHeight = gameHeight / gameRows
 
 
 export default class Root extends Component {
     constructor(...args) {
         // instantiate `this`
         super(...args)
-
-        const initialLevel = 1
-
         // set initial state
         this.state = {
-            // canvas dimensions
-            height: 100,
-            width: 100,
-            // game state
             level: initialLevel,
             score: 0,
             moves: 0,
             isPaused: true,
-            board: new Board({
-                rows: 30,
-                cols: 30,
+            colorMatrix: new ColorMatrix({
+                rows: gameRows,
+                cols: gameCols,
             }).sprinkle(initialLevel),
-            salt: new Player({
-                position: new Vector2(50, 50),
+            salt: new PlayerClass({
+                position: new Vector2(gameWidth / 2, gameHeight / 2),
                 velocity: new Vector2(),
-                color: new Color(200, 4, 1),
-                radius: 10,
+                color: new Color(200, 140, 110),
+                mass: 15,
             }),
-            pepper: new Player({
-                position: new Vector2(50, 50),
+            pepper: new PlayerClass({
+                position: new Vector2(gameWidth / 2, gameHeight / 2),
                 velocity: new Vector2(),
-                color: new Color(100, 200, 3),
-                radius: 20,
+                color: new Color(140, 200, 133),
+                mass: 35,
             }),
         }
-        // throttle so that we dont spam resize event
-        this.onResize = throttle(
-            // bind instance method so it can be passed as window resize handler
-            // pass draw as callback so always redraw after resize
-            this.onResize.bind(this, this.draw.bind(this)),
-            100
-        )
-    }
-
-
-    componentDidMount() {
-        // determine initial dimensions and render to canvas
-        this.onResize()
-        // add resize event handler
-        window.addEventListener('resize', this.onResize)
     }
 
 
     componentWillUnmount() {
         // cut animation loop
-        this.setState(
-            {isPaused: true},
-            // then remove resize event handler
-            () => window.removeEventListener('resize', this.onResize)
-        )
-    }
-
-
-    onResize(cb) {
-        // canvas DOM node
-        const canvas = this.refs.canvas
-        // width of canvas DOM node
-        const width = canvas.clientWidth
-        // desired height of canvas DOM node
-        const height = width
-
-        // set canvas dimensions to its DOM node dimensions so that
-        // no stretching occurs
-        canvas.width = width
-        canvas.height = height
-
-        this.setState({
-            height,
-            width,
-        }, cb)
+        this.setState({isPaused: true})
     }
 
 
     loopAnimation() {
-        const {salt, pepper, board, isPaused} = this.state
-        // the amount of dust leeched from the board by salt
-        const leeched = board.leech(salt.position)
-        this.setState({score: this.state.score + leeched})
+        const {salt, pepper, colorMatrix, isPaused} = this.state
 
+        const saltI = Math.floor(salt.position.y / cellHeight)
+        const saltJ = Math.floor(salt.position.x / cellWidth)
+
+        // the amount of dust leeched from the colorMatrix by salt
+        const leeched = colorMatrix.leech(saltI, saltJ)
 
         const saltToPepper = pepper.position.minus(salt.position)
-        const saltToPepperMagCubed = saltToPepper.magSq * saltToPepper.mag
 
-        let scalar = 100 / saltToPepperMagCubed
-
+        let scalar = 70 / saltToPepper.magSq * saltToPepper.mag
         if (!(scalar < 500)) {
             scalar = 500
         }
@@ -115,10 +79,11 @@ export default class Root extends Component {
         const acceleration = saltToPepper.scale(scalar)
         salt.velocity = salt.velocity.plus(acceleration.scale(dt))
         salt.position = salt.position.plus(salt.velocity.scale(dt))
+            .mod(new Vector2(gameWidth, gameHeight))
 
+        // trigger update by updating score based on leech
+        this.setState({score: this.state.score + leeched})
 
-        // draw it all to the canvas
-        this.draw()
 
         // if the animation loop has not been cut off
         if (!isPaused) {
@@ -128,25 +93,23 @@ export default class Root extends Component {
     }
 
 
-    handleCanvasClick({pageX, pageY, target}) {
+    handleSVGClick({pageX, pageY, currentTarget}) {
         // mouse coordinates relative to canvas DOM node
-        const x = pageX - target.offsetLeft
-        const y = pageY - target.offsetTop
+        const x = pageX - currentTarget.offsetLeft
+        const y = pageY - currentTarget.offsetTop
 
-        // if pepper is not frozen
-        if (!this.state.pepper.isFrozen) {
-            // move it to mouse position
-            // implicit state mutation ok since state will be updated just below
-            this.state.pepper.position = new Vector2(
-                // player position units are percentages relative to canvas size
-                100 * x / this.state.width,
-                100 * y / this.state.height
-            )
-        }
+        // move pepper to mouse position
+        // implicit state mutation ok since state will be updated just below
+        this.state.pepper.position = new Vector2(
+            // TODO: don't use `window` like a fool
+            gameWidth * x / window.innerWidth,
+            gameWidth * y / window.innerWidth,
+        )
 
+        // to reference later in callback
         const wasPaused = this.state.isPaused
 
-        // update number of moves and make sure animation is not paused
+        // update number of moves and make sure animation is not paused, then...
         this.setState(
             {
                 moves: this.state.moves + 1,
@@ -164,45 +127,37 @@ export default class Root extends Component {
 
 
     setLevel(level) {
-        // clear and resprinkle board
-        this.state.board.clear().sprinkle(level)
-        // recenter salt, then...
-        this.centerPlayers(() => {
-            // draw new setup
-            this.draw()
-            // update internal state
-            this.setState({
-                level,
-                isPaused: true,
-                moves: 0,
-            })
+        // clear and resprinkle colorMatrix
+        this.state.colorMatrix.clear().sprinkle(level)
+        // center salt character
+        this.state.salt.position = new Vector2(gameWidth / 2, gameHeight / 2)
+        // reset salt velocity
+        this.state.salt.velocity = new Vector2()
+        // center pepper character
+        this.state.pepper.position = new Vector2(gameWidth / 2, gameHeight / 2)
+        // reset pepper velocity
+        this.state.pepper.velocity = new Vector2()
+        // trigger update to state by setting...
+        this.setState({
+            // new level number
+            level,
+            // pausing animation loop
+            isPaused: true,
+            // resetting move counter
+            moves: 0,
         })
     }
 
 
-    centerPlayers(cb) {
-        // center salt character
-        this.state.salt.position = new Vector2(50, 50)
-        // reset salt velocity
-        this.state.salt.velocity = new Vector2()
-        // center pepper character
-        this.state.pepper.position = new Vector2(50, 50)
-        // force update since state mutation above is implicit
-        this.forceUpdate(cb)
-    }
-
-
-    draw() {
-        const context = this.refs.canvas.getContext('2d')
-
-        this.state.board.draw(context)
-        this.state.salt.draw(context)
-        this.state.pepper.draw(context)
-    }
-
-
     render() {
-        const {level, score, moves} = this.state
+        const {
+            level,
+            score,
+            moves,
+            colorMatrix,
+            salt,
+            pepper,
+        } = this.state
 
         return (
             <div style={styles.container}>
@@ -214,14 +169,36 @@ export default class Root extends Component {
                     score={score}
                     moves={moves}
                 />
-                <div style={styles.content}>
-                    <canvas
-                        ref='canvas'
-                        style={styles.canvas}
-                        onClick={
-                            (event) => this.handleCanvasClick(event)
-                        }
-                    />
+                <div
+                    style={styles.svgContainer}
+                >
+                    <SVG
+                        style={styles.svg}
+                        viewBox={`0 0 ${gameWidth} ${gameHeight}`}
+                        onClick={(event) => this.handleSVGClick(event)}
+                    >
+                        <ColorMatrixComponent
+                            height={gameHeight}
+                            width={gameWidth}
+                            colorMatrix={colorMatrix}
+                        />
+                        <PlayerComponent
+                            height={gameHeight}
+                            width={gameWidth}
+                            mass={pepper.mass}
+                            x={pepper.position.x}
+                            y={pepper.position.y}
+                            color={pepper.color}
+                        />
+                        <PlayerComponent
+                            height={gameHeight}
+                            width={gameWidth}
+                            mass={salt.mass}
+                            x={salt.position.x}
+                            y={salt.position.y}
+                            color={salt.color}
+                        />
+                    </SVG>
                 </div>
             </div>
         )
